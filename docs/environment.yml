@@ -12,6 +12,7 @@ dependencies:
    - nbconvert
    - nbformat
    - ipykernel
+   - ipython_genutils
    - pandoc
    - pip
    - pip:
