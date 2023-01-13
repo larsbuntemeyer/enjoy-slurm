@@ -8,7 +8,6 @@ dependencies:
    - numpydoc
    - sphinx
    - sphinx_rtd_theme
-   - nbsphinx
    - ipython
    - nbconvert
    - nbformat
@@ -17,10 +16,11 @@ dependencies:
    - pandoc
    - jinja2<3.1
    - pip
-   - sphinx-book-theme
    - pip:
      - docrep<=0.2.7
      - jupyter_client
+     - nbsphinx
+     - sphinx-book-theme
      - sphinx_pangeo_theme
      - sphinx-copybutton
      - sphinxcontrib-srclinks
