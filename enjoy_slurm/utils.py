@@ -1,5 +1,6 @@
 import pandas as pd
 from io import StringIO
+import subprocess
 
 delimiter = "|"
 
@@ -34,3 +35,13 @@ def kwargs_to_list(d):
             flag += "=" + parse_slurm_arg(v)
         r += [flag]
     return r
+
+
+def execute(command, return_type="stdout", decode=True):
+    output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if output.returncode != 0:
+        raise Exception(output.stderr)
+    if return_type == "output":
+        return output
+    if return_type == "stdout":
+        return output.stdout.decode("utf-8")
