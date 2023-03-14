@@ -2,12 +2,11 @@ name: enjoy-slurm_docs
 dependencies:
    - python=3.8
    # If your docs code examples depend on other packages add them here
-   - numpy
+   - pandas
    - xarray
    # These are needed for the docs themselves
    - numpydoc
    - sphinx
-   - sphinx_rtd_theme
    - ipython
    - nbconvert
    - nbformat
@@ -16,11 +15,11 @@ dependencies:
    - pandoc
    - jinja2<3.1
    - pip
+   - sphinx-book-theme
    - pip:
      - docrep<=0.2.7
      - jupyter_client
      - nbsphinx
-     - sphinx-book-theme
      - sphinx_pangeo_theme
      - sphinx-copybutton
      - sphinxcontrib-srclinks
