@@ -6,7 +6,7 @@ enjoy-slurm
 [![pypi](https://img.shields.io/pypi/v/enjoy-slurm.svg)](https://pypi.org/project/enjoy-slurm)
 [![Documentation Status](https://readthedocs.org/projects/enjoy-slurm/badge/?version=latest)](https://enjoy-slurm.readthedocs.io/en/latest/?badge=latest)
 
-slim python slurm control
+naive python slurm control
 
 --------
 
