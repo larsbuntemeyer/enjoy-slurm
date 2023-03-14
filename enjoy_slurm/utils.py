@@ -20,14 +20,14 @@ def parse_dependency(ids, how=None):
         how = "afterok"
     if not isinstance(ids, list):
         ids = [ids]
-    return ":".join([how] + [str(id) for id in ids])
+    return [":".join([how] + [str(id) for id in ids])]
 
 
 def parse_slurm_arg(a):
     """parse slurm arguments to str or list of str with colons"""
     if isinstance(a, list):
         return ":".join([str(x) for x in a])
-    return str(a)
+    return [str(a)]
 
 
 def kwargs_to_list(d):
@@ -35,11 +35,13 @@ def kwargs_to_list(d):
     r = []
     for k, v in d.items():
         flag = "--" + k.replace("_", "-")
-        if k == "dependency" and v is not None:
-            flag += "=" + parse_dependency(v, d.get("how", None))
-        elif v is not True:
-            flag += "=" + parse_slurm_arg(v)
         r += [flag]
+        if k == "dependency" and v is not None:
+            # flag += "=" + parse_dependency(v, d.get("how", None))
+            r += parse_dependency(v, d.get("how", None))
+        elif v is not True:
+            r += parse_slurm_arg(v)
+        # r += [flag]
     return r
 
 
@@ -76,8 +78,9 @@ def create_scontrol_func(name):
 
 def execute(command, return_type="stdout", decode=True):
     output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    print(command)
     if output.returncode != 0:
-        raise Exception(output.stderr.decode("utf-8"))
+        raise Exception(output.stderr)  # .decode("utf-8"))
     if return_type == "output":
         return output
     if return_type == "stdout":

@@ -4,7 +4,7 @@ import subprocess
 from .utils import kwargs_to_list, parse_sacct, execute, create_scontrol_func
 
 
-def sbatch(jobscript, *args, **kwargs):
+def sbatch(jobscript=None, *args, **kwargs):
     """
     Submit a batch script to Slurm
 
@@ -18,7 +18,8 @@ def sbatch(jobscript, *args, **kwargs):
     Parameters
     ----------
     jobscript : str
-        Path to jobscript file.
+        Path to jobscript file. If no jobscript is provided, you can use the
+        ``wrap`` keyword to directly pass shell commands.
 
     Returns
     -------
@@ -26,10 +27,11 @@ def sbatch(jobscript, *args, **kwargs):
         Slurm jobid.
 
     """
-    logging.info("submitting: " + jobscript)
-    command = (
-        ["sbatch", "--parsable"] + list(args) + kwargs_to_list(kwargs) + [jobscript]
-    )
+    if jobscript is None:
+        jobscript = []
+    else:
+        jobscript = [jobscript]
+    command = ["sbatch", "--parsable"] + list(args) + kwargs_to_list(kwargs) + jobscript
     jobid = int(execute(command))
     logging.info(f"jobid: {jobid}")
     return jobid
