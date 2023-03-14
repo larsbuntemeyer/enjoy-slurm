@@ -1,0 +1,10 @@
+name: enjoy-slurm-test
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - pandas
+# for testing
+  - pytest
+  - pytest-cov
+  - pytest-env
