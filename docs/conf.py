@@ -34,9 +34,10 @@ author = "Lars Buntemeyer"
 # built documents.
 # see https://pypi.org/project/setuptools-scm/ for details
 from pkg_resources import get_distribution
-release = get_distribution('enjoy_slurm').version
+
+release = get_distribution("enjoy_slurm").version
 # for example take major/minor
-version = '.'.join(release.split('.')[:2])
+version = ".".join(release.split(".")[:2])
 
 # -- General configuration ---------------------------------------------------
 
@@ -74,7 +75,7 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints", "Thumbs.db", ".DS_Store"]
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-#html_theme = "pangeo"
+# html_theme = "pangeo"
 html_theme = "sphinx_book_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
