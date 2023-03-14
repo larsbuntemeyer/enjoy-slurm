@@ -1,5 +1,6 @@
+#################
 API Documentation
-=================
+#################
 
 This page provides an auto-generated summary of the API.
 
