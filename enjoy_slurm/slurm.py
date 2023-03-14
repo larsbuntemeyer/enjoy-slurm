@@ -1,5 +1,7 @@
 import logging
+import subprocess
 
+from .utils import kwargs_to_list, parse_sacct
 
 # define job states
 UNKNOWN = -2
@@ -39,25 +41,37 @@ SCHEDULER = {
 }
 
 
-def submit(jobscript, *args, **kwargs):
-    def dict_to_list(x):
-        """parse arguments to command line arguments for sbatch"""
-        r = []
-        for x in zip(x.keys(), x.values()):
-            if x[1]:
-                r += ["--" + x[0].replace("_", "-") + "=" + str(x[1])]
-        return r
-
-    logging.info("submitting: " + jobscript)
-    commands = (
-        ["sbatch", "--parsable"] + list(args) + dict_to_list(kwargs) + [jobscript]
-    )
-    output = subprocess.run(commands, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def execute(command, return_type="stdout", decode=True):
+    output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if output.returncode != 0:
         raise Exception(output.stderr)
-    jobid = int(output.stdout)
+    if return_type == "output":
+        return output
+    if return_type == "stdout":
+        return output.stdout.decode("utf-8")
+
+
+def sbatch(jobscript, *args, **kwargs):
+    logging.info("submitting: " + jobscript)
+    command = (
+        ["sbatch", "--parsable"] + list(args) + kwargs_to_list(kwargs) + [jobscript]
+    )
+    jobid = int(execute(command))
     logging.info(f"jobid: {jobid}")
     return jobid
+
+
+def sacct(jobid=None, format=None, **kwargs):
+    if format is None and not kwargs:
+        format = ["jobid", "elapsed", "ncpus", "ntasks", "state", "end", "jobname"]
+    print(format)
+    command = ["sacct", "--parsable2"] + kwargs_to_list(kwargs)
+    if format:
+        command += ["--format=" + ",".join(format)]
+    if jobid is not None:
+        command += ["-j", str(jobid)]
+    output = execute(command)
+    return parse_sacct(output)
 
 
 class Scheduler:
