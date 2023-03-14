@@ -1,10 +1,9 @@
 name: enjoy-slurm_docs
+channels:
+  - conda-forge
+  - nodefaults
 dependencies:
-   - python=3.8
-   # If your docs code examples depend on other packages add them here
    - pandas
-   - xarray
-   # These are needed for the docs themselves
    - numpydoc
    - sphinx
    - ipython
@@ -20,6 +19,5 @@ dependencies:
      - docrep<=0.2.7
      - jupyter_client
      - nbsphinx
-     - sphinx_pangeo_theme
      - sphinx-copybutton
      - sphinxcontrib-srclinks
