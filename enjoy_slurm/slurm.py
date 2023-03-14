@@ -8,6 +8,13 @@ def sbatch(jobscript, *args, **kwargs):
     """
     Submit a batch script to Slurm
 
+    Many sbatch command line arguments can be passed via **kwargs. For example,
+    the ``partion="compute"`` argument would be translated into the
+    ``--partion=compute`` command line argument for sbatch. For all available
+    options, please consult the sbatch manpage. However, some of the most useful
+    argument are also documented here.
+
+
     Parameters
     ----------
     jobscript : str
