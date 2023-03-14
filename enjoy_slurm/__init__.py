@@ -1,1 +1,1 @@
-from .slurm import sbatch, sacct
+from .slurm import sbatch, sacct, scontrol

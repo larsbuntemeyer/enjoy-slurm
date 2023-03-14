@@ -1,7 +1,7 @@
 import logging
 import subprocess
 
-from .utils import kwargs_to_list, parse_sacct, execute
+from .utils import kwargs_to_list, parse_sacct, execute, create_scontrol_func
 
 
 def sbatch(jobscript, *args, **kwargs):
@@ -56,8 +56,19 @@ def sacct(jobid=None, format=None, **kwargs):
         format = ["jobid", "elapsed", "ncpus", "ntasks", "state", "end", "jobname"]
     command = ["sacct", "--parsable2"] + kwargs_to_list(kwargs)
     if format:
+        if not isinstance(format, list):
+            format = [format]
         command += ["--format=" + ",".join(format)]
     if jobid is not None:
         command += ["-j", str(jobid)]
     output = execute(command)
     return parse_sacct(output)
+
+
+class SControl(type):
+    def __getattr__(cls, key):
+        return create_scontrol_func(key)
+
+
+class scontrol(metaclass=SControl):
+    pass
