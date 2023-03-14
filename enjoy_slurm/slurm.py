@@ -22,7 +22,7 @@ def sbatch(jobscript, *args, **kwargs):
 
     Returns
     -------
-    jobid: int
+    jobid : int
         Slurm jobid.
 
     """
@@ -43,12 +43,12 @@ def sacct(jobid=None, format=None, **kwargs):
     ----------
     jobid : int
         If provided, displays information about the specified job.
-    format: list
+    format : list
         List of columns that can be specified.
 
     Returns
     -------
-    sacct info: DataFrame
+    sacct info : DataFrame
         Slurm accounting data.
 
     """
