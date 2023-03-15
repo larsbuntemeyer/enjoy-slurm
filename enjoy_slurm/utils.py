@@ -78,7 +78,6 @@ def create_scontrol_func(name):
 
 def execute(command, return_type="stdout", decode=True):
     output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    print(command)
     if output.returncode != 0:
         raise Exception(output.stderr)  # .decode("utf-8"))
     if return_type == "output":
