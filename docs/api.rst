@@ -14,3 +14,5 @@ Top-level functions
 
    sbatch
    sacct
+   scontrol
+   jobinfo
