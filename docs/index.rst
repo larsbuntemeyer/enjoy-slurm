@@ -9,6 +9,7 @@ Welcome to enjoy-slurm's documentation!
 
    tutorial
    api
+   whats_new
 
 
 
