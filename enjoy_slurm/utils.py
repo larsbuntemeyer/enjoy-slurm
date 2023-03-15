@@ -2,10 +2,22 @@ import pandas as pd
 from io import StringIO
 from itertools import groupby
 import subprocess
+from .config import default_sacct_format
 
 delimiter = "|"
 
 own_kwargs = ["how"]
+
+
+def handle_sacct_format(format=None, kwargs={}):
+    if format == "brief" or "brief" in kwargs:
+        return ["--brief"]
+    format = format or default_sacct_format
+    if format:
+        if not isinstance(format, list):
+            format = [format]
+        return ["--format"] + [",".join(format)]
+    return []
 
 
 def parse_sacct(csv):
