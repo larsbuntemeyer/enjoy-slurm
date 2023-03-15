@@ -56,6 +56,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "numpydoc",
     "nbsphinx",
+    "nbsphinx_link",
     "IPython.sphinxext.ipython_directive",
     "IPython.sphinxext.ipython_console_highlighting",
     "sphinxcontrib.srclinks",

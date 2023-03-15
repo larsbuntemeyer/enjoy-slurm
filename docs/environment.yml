@@ -15,6 +15,7 @@ dependencies:
    - jinja2<3.1
    - pip
    - sphinx-book-theme
+   - nbsphinx-link
    - pip:
      - docrep<=0.2.7
      - jupyter_client
