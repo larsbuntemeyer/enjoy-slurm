@@ -2,20 +2,36 @@ import pandas as pd
 from io import StringIO
 from itertools import groupby
 import subprocess
+from .config import default_sacct_format
 
 delimiter = "|"
 
+own_kwargs = ["how"]
 
-def parse_sacct(csv):
+
+def handle_sacct_format(format=None, kwargs={}):
+    if format == "brief" or "brief" in kwargs:
+        return ["--brief"]  # + jobsteps * ["--format", "jobname"]
+    format = format or default_sacct_format
+    if format:
+        if not isinstance(format, list):
+            format = [format]
+        return ["--format"] + [",".join(format)]
+    return []
+
+
+def parse_sacct(csv, jobsteps=None):
     """convert parsable sacct output to dataframe"""
-    try:
-        return pd.read_csv(StringIO(csv), delimiter=delimiter)
-    except:
-        return csv
+    df = pd.read_csv(StringIO(csv), delimiter=delimiter)
+    if jobsteps == "minimal":
+        df = df[df["JobID"].str.isnumeric()]
+    return df
 
 
 def parse_dependency(ids, how=None):
     """parse dependency arguments to sbatch command line"""
+    if isinstance(ids, str):
+        return [ids]
     if how is None:
         how = "afterok"
     if not isinstance(ids, list):
@@ -34,6 +50,9 @@ def kwargs_to_list(d):
     """parse arguments to command line arguments for sbatch"""
     r = []
     for k, v in d.items():
+        # ignore own kwargs
+        if k in own_kwargs:
+            continue
         flag = "--" + k.replace("_", "-")
         r += [flag]
         if k == "dependency" and v is not None:

@@ -1,7 +1,13 @@
 import logging
 import subprocess
 
-from .utils import kwargs_to_list, parse_sacct, execute, create_scontrol_func
+from .utils import (
+    kwargs_to_list,
+    parse_sacct,
+    execute,
+    create_scontrol_func,
+    handle_sacct_format,
+)
 
 
 def sbatch(jobscript=None, *args, **kwargs):
@@ -37,7 +43,7 @@ def sbatch(jobscript=None, *args, **kwargs):
     return jobid
 
 
-def sacct(jobid=None, format=None, **kwargs):
+def sacct(jobid=None, format=None, jobsteps="minimal", **kwargs):
     """
     Accounting data for all jobs and job steps in the Slurm job accounting log or Slurm database
 
@@ -46,7 +52,10 @@ def sacct(jobid=None, format=None, **kwargs):
     jobid : int
         If provided, displays information about the specified job.
     format : list
-        List of columns that can be specified.
+        List of columns that should be shown.
+    jobsteps : str
+        Jobsteps that should be shown. If ``None``, all jobsteps are returned.
+        Default is ``mininmal`` which returns only the main inclusive step.
 
     Returns
     -------
@@ -54,17 +63,26 @@ def sacct(jobid=None, format=None, **kwargs):
         Slurm accounting data.
 
     """
-    if format is None and not kwargs:
-        format = ["jobid", "elapsed", "ncpus", "ntasks", "state", "end", "jobname"]
-    command = ["sacct", "--parsable2"] + kwargs_to_list(kwargs)
-    if format:
-        if not isinstance(format, list):
-            format = [format]
-        command += ["--format=" + ",".join(format)]
+    # return handle_sacct_format(format, kwargs)
+    command = (
+        ["sacct", "--parsable2"]
+        + handle_sacct_format(format, kwargs)
+        + kwargs_to_list(kwargs)
+    )
+
     if jobid is not None:
         command += ["-j", str(jobid)]
+
     output = execute(command)
-    return parse_sacct(output)
+
+    return parse_sacct(output, jobsteps)
+
+
+def jobinfo(jobid=None, format=None, **kwargs):
+    if format is not None and "JobID" not in format:
+        format = format.append("JobID")
+    acct = sacct(jobid, format, **kwargs)
+    return acct.set_index("JobID").to_dict(orient="index")
 
 
 class SControl(type):
