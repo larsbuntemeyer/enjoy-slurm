@@ -5,6 +5,8 @@ import subprocess
 
 delimiter = "|"
 
+own_kwargs = ["how"]
+
 
 def parse_sacct(csv):
     """convert parsable sacct output to dataframe"""
@@ -16,6 +18,8 @@ def parse_sacct(csv):
 
 def parse_dependency(ids, how=None):
     """parse dependency arguments to sbatch command line"""
+    if isinstance(ids, str):
+        return [ids]
     if how is None:
         how = "afterok"
     if not isinstance(ids, list):
@@ -34,6 +38,9 @@ def kwargs_to_list(d):
     """parse arguments to command line arguments for sbatch"""
     r = []
     for k, v in d.items():
+        # ignore own kwargs
+        if k in own_kwargs:
+            continue
         flag = "--" + k.replace("_", "-")
         r += [flag]
         if k == "dependency" and v is not None:
