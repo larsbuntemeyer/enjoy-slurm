@@ -11,7 +11,7 @@ own_kwargs = ["how"]
 
 def handle_sacct_format(format=None, kwargs={}):
     if format == "brief" or "brief" in kwargs:
-        return ["--brief"]
+        return ["--brief"]  # + jobsteps * ["--format", "jobname"]
     format = format or default_sacct_format
     if format:
         if not isinstance(format, list):
@@ -20,12 +20,12 @@ def handle_sacct_format(format=None, kwargs={}):
     return []
 
 
-def parse_sacct(csv):
+def parse_sacct(csv, jobsteps=None):
     """convert parsable sacct output to dataframe"""
-    try:
-        return pd.read_csv(StringIO(csv), delimiter=delimiter)
-    except:
-        return csv
+    df = pd.read_csv(StringIO(csv), delimiter=delimiter)
+    if jobsteps == "minimal":
+        df = df[df["JobID"].str.isnumeric()]
+    return df
 
 
 def parse_dependency(ids, how=None):

@@ -43,7 +43,7 @@ def sbatch(jobscript=None, *args, **kwargs):
     return jobid
 
 
-def sacct(jobid=None, format=None, **kwargs):
+def sacct(jobid=None, format=None, jobsteps="minimal", **kwargs):
     """
     Accounting data for all jobs and job steps in the Slurm job accounting log or Slurm database
 
@@ -53,6 +53,9 @@ def sacct(jobid=None, format=None, **kwargs):
         If provided, displays information about the specified job.
     format : list
         List of columns that should be shown.
+    jobsteps : str
+        Jobsteps that should be shown. If ``None``, all jobsteps are returned.
+        Default is ``mininmal`` which returns only the main inclusive step.
 
     Returns
     -------
@@ -72,7 +75,7 @@ def sacct(jobid=None, format=None, **kwargs):
 
     output = execute(command)
 
-    return parse_sacct(output)
+    return parse_sacct(output, jobsteps)
 
 
 def jobinfo(jobid=None, format=None, **kwargs):
