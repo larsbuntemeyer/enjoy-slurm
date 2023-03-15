@@ -1,4 +1,3 @@
-import logging
 import subprocess
 
 from .utils import (
@@ -37,9 +36,10 @@ def sbatch(jobscript=None, *args, **kwargs):
         jobscript = []
     else:
         jobscript = [jobscript]
+
     command = ["sbatch", "--parsable"] + list(args) + kwargs_to_list(kwargs) + jobscript
     jobid = int(execute(command))
-    logging.info(f"jobid: {jobid}")
+
     return jobid
 
 
