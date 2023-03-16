@@ -24,7 +24,7 @@ def parse_sacct(csv, jobsteps=None):
     """convert parsable sacct output to dataframe"""
     df = pd.read_csv(StringIO(csv), delimiter=delimiter)
     if jobsteps == "minimal":
-        df = df[df["JobID"].str.isnumeric()]
+        df = df[df["JobID"].str.isnumeric()].reset_index()
     return df
 
 
@@ -65,31 +65,36 @@ def kwargs_to_list(d):
 
 
 def parse_scontrol_show(output):
-    """parse scontrol output"""
-    # create list of entries
-    entries = ["".join(list(g)) for k, g in groupby(output.splitlines(), key=bool) if k]
-    results = {}
-    for e in entries:
-        attrs_list = e.split()
-        attrs = {}
-        for a in attrs_list:
-            try:
-                split = a.split("=")
-                attrs[split[0]] = split[1]
-            except:
-                pass
-        results[list(attrs.values())[0]] = attrs
-        # results.append({a.split("=")[0]:a.split("=")[1] for a in attrs})
+    """try to parse scontrol output"""
+    try:
+        entries = [
+            "".join(list(g)) for k, g in groupby(output.splitlines(), key=bool) if k
+        ]
+        results = {}
+        for e in entries:
+            attrs_list = e.split()
+            attrs = {}
+            for a in attrs_list:
+                try:
+                    split = a.split("=")
+                    attrs[split[0]] = split[1]
+                except:
+                    pass
+            results[list(attrs.values())[0]] = attrs
+            # results.append({a.split("=")[0]:a.split("=")[1] for a in attrs})
+    except Exception:
+        results = output
     return results
 
 
 def create_scontrol_func(name):
     def func(*args, **kwargs):
-        command = (
-            ["scontrol", name]
-            + list(args)
-            + [str(k) + "=" + str(v) for k, v in kwargs.items()]
-        )  # + kwargs_to_list(kwargs)
+        command = ["scontrol", name] + list(args)  # + kwargs_to_list(kwargs)
+        for (
+            k,
+            v,
+        ) in kwargs.items():
+            command += [str(k), str(v)]
         return parse_scontrol_show(execute(command))
 
     return func
@@ -98,7 +103,7 @@ def create_scontrol_func(name):
 def execute(command, return_type="stdout", decode=True):
     output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if output.returncode != 0:
-        raise Exception(output.stderr)  # .decode("utf-8"))
+        raise Exception(output.stderr.decode("utf-8"))
     if return_type == "output":
         return output
     if return_type == "stdout":
