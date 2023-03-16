@@ -78,10 +78,32 @@ def sacct(jobid=None, format=None, steps=None, **kwargs):
     return parse_sacct(output, steps)
 
 
-def jobinfo(jobid=None, format=None, **kwargs):
+def jobinfo(jobid=None, format=None, steps="minimal", **kwargs):
+    """
+    Accounting data for all jobs and job steps.
+
+    Parameters
+    ----------
+    jobid : int
+        If provided, displays information about the specified job.
+    format : list
+        List of columns that should be shown.
+    steps : str
+        Jobsteps that should be shown. If ``None``, all jobsteps are returned.
+        Use ``mininmal`` to return only the main inclusive step.
+
+    Returns
+    -------
+    sacct info : dict
+        Slurm accounting data.
+
+    """
+    if not isinstance(format, list):
+        format = [format]
     if format is not None and "JobID" not in format:
-        format = format.append("JobID")
-    acct = sacct(jobid, format, **kwargs)
+        format.append("JobID")
+    acct = sacct(jobid, format, steps, **kwargs)
+
     return acct.set_index("JobID").to_dict(orient="index")
 
 
@@ -91,4 +113,18 @@ class SControl(type):
 
 
 class scontrol(metaclass=SControl):
-    pass
+    """
+    View or modify Slurm configuration and state
+    """
+
+    def show(*args, **kwargs):
+        """
+        Display state of identified entity, default is all records.
+
+        Entity may be "aliases", "assoc_mgr", "bbstat", "burstBuffer",
+        "config", "daemons", "dwstat", "federation", "frontend",
+        "hostlist", "hostlistsorted", "hostnames", "job", "node",
+        "partition", "reservation", "slurmd", "step", or "topology".
+
+        """
+        return create_scontrol_func("show")(*args, **kwargs)
