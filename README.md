@@ -11,6 +11,16 @@ enjoy-slurm
 line tools and arguments. That's why we call it *naive*. However, it should avoid having to rewrite some scripts required to submit and control many
 Slurm jobs on an HPC computer. This package is a successor of the retired [HPC scheduler package](https://github.com/larsbuntemeyer/hpc-scheduler).
 
+## Features
+
+* Use `sbatch`, `sacct`, `scontrol` etc. directly from python.
+* Parse command outputs into python objects like pandas DataFrames or dictionaries.
+
+## Related projects
+
+* [pyslurm](https://github.com/PySlurm/pyslurm)
+* [ipyslurm](https://github.com/auneri/ipyslurm)
+
 --------
 
 <p><small>Project based on the <a target="_blank" href="https://github.com/jbusecke/cookiecutter-science-project">cookiecutter science project template</a>.</small></p>
