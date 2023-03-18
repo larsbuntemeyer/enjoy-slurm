@@ -22,7 +22,7 @@ jobs:
         run: |
           which python
           which python${{ matrix.python-version }}
-          pip install pytest pytest-cov pytest-env
+          pip install pytest pytest-cov pytest-env pandas
       - name: Start Slurm Container
         uses: sudo-bot/action-docker-compose@latest
         with:
