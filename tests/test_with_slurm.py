@@ -5,4 +5,5 @@ import enjoy_slurm as slurm
 
 @requires_slurm
 def test_sbatch():
-    pass
+    jobid = slurm.sbatch(wrap="echo Hello World")
+    print(jobid)
