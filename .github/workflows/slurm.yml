@@ -48,6 +48,3 @@ jobs:
       - name: Run tests
         timeout-minutes: 5
         run: docker exec slurmctl python -u -m pytest
-          --cov=enjoy_slurm
-          --cov-report=xml
-          --junitxml=test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
