@@ -47,4 +47,4 @@ jobs:
           docker exec slurmctl python -m pip install -e .
       - name: Run tests
         timeout-minutes: 5
-        run: docker exec slurmctl python -u -m pytest
+        run: docker exec slurmctl python -u -m pytest -s
