@@ -12,7 +12,7 @@ def _cmlorskip(command):
             commands, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         has = True
-    except ImportError:  # pragma: no cover
+    except FileNotFoundError:
         has = False
     func = pytest.mark.skipif(not has, reason=f"requires slurm")
     return has, func
