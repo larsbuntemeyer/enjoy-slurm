@@ -37,9 +37,9 @@ jobs:
           ls -al
           docker inspect slurmctl
           env | sort
-      - name: Configure slurm 
+      - name: Configure slurm
         run: |
-          docker exec slurmctl ./scripts/configure.sh 
+          docker exec slurmctl ./scripts/configure.sh
         env:
           PYTHON: ${{ matrix.python-version }}
       - name: Install enjoy-slurm
@@ -51,4 +51,3 @@ jobs:
           --cov=enjoy_slurm
           --cov-report=xml
           --junitxml=test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
-
