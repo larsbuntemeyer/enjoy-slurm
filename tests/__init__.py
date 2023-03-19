@@ -31,4 +31,4 @@ def _machine(machine):
 
 has_slurm, requires_slurm = _cmlorskip("sinfo")
 on_levante, requires_levante = _machine("lvt.dkrz.de")
-hostname = socket.gethostname().split(".", 1)[1]
+hostname = socket.gethostname()
