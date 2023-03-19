@@ -48,7 +48,10 @@ jobs:
           docker exec slurmctl python -m pip install -e .
       - name: Run tests
         timeout-minutes: 5
-        run: docker exec slurmctl python -u -m pytest -s
+        run: docker exec slurmctl python -u -m pytest
+          --cov=enjoy_slurm
+          --cov-report=xml
+          --junitxml=test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
       - name: Upload code coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
