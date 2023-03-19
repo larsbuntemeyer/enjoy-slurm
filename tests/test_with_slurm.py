@@ -16,7 +16,7 @@ def test_sbatch():
     if on_levante:
         kwargs = {"partition": "shared", "account": "ch0636"}
     else:
-        kargs = {}
+        kwargs = {}
     jobid = slurm.sbatch(wrap="echo Hello World", **kwargs)
     print(jobid)
 

@@ -14,5 +14,5 @@ Top-level functions
 
    sbatch
    sacct
-   scontrol
+   scontrol.show
    jobinfo
