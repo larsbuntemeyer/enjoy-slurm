@@ -78,6 +78,19 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints", "Thumbs.db", ".DS_Store"]
 #
 # html_theme = "pangeo"
 html_theme = "sphinx_book_theme"
+html_title = "enjoy slurm!"
+
+html_theme_options = dict(
+    repository_url="https://github.com/larsbuntemeyer/enjoy-slurm",
+    repository_branch="main",
+    path_to_docs="docs",
+    use_edit_page_button=True,
+    use_repository_button=True,
+    use_issues_button=True,
+    home_page_in_toc=False,
+    extra_navbar="",
+    navbar_footer_text="",
+)
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

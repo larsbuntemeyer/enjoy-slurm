@@ -21,9 +21,9 @@ wait_for_cmd() {
     fi
 }
 
-######################################################
-# Configure Slurm for testing, after building PySlurm
-######################################################
+#############################
+# Configure Slurm for testing
+#############################
 
 # Add fake licenses for testing
 echo "---> Adding licenses"
