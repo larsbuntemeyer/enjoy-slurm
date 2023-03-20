@@ -24,6 +24,8 @@ def parse_sacct(csv, jobsteps=None):
     """convert parsable sacct output to dataframe"""
     df = pd.read_csv(StringIO(csv), delimiter=delimiter)
     if jobsteps == "minimal":
+        # ensure str
+        df["JobID"] = df.JobID.astype(str)
         df = df[df["JobID"].str.isnumeric()].reset_index()
     return df
 

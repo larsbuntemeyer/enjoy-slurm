@@ -11,6 +11,8 @@ from .utils import (
     handle_sacct_format,
 )
 
+from .config import fields
+
 
 def sbatch(jobscript=None, *args, **kwargs):
     """
@@ -101,7 +103,7 @@ def jobinfo(jobid=None, format=None, steps="minimal", **kwargs):
         Slurm accounting data.
 
     """
-    if not isinstance(format, list):
+    if format is not None and not isinstance(format, list):
         format = [format]
     if format is not None and "JobID" not in format:
         format.append("JobID")
@@ -136,6 +138,8 @@ class scontrol(metaclass=SControl):
 class Job:
     def __init__(self, job=None, jobid=None, interpreter=None, **kwargs):
         self.job = job
+        if job is None:
+            self.job = ""
         self.jobid = jobid
         self.interpreter = interpreter
         if interpreter is None:
@@ -143,26 +147,46 @@ class Job:
         if interpreter == "python":
             self.interpreter = "#!/usr/bin/env python"
         self.wrap = None
-        if op.isfile(job):
-            self.jobscript = job
+        if op.isfile(self.job):
+            self.jobscript = self.job
         else:
             self.jobscript = None
-            self.wrap = job
+            self.wrap = self.job
         if self.interpreter is not None:
             self.wrap = self.interpreter + "\n" + self.wrap
         self.kwargs = kwargs
 
+    def __eq__(self, other):
+        return self.jobid == other.jobid
+
+    def __getattr__(self, key):
+        return self.jobinfo(format=key)
+
     def __repr__(self):
         txt = f"job         : {self.job}\n"
         txt += f"jobid       : {self.jobid}\n"
-        txt += f"interpreter : {self.interpreter}"
+        txt += f"interpreter : {self.interpreter}\n"
+        txt += f"kwargs      : {self.kwargs}\n"
         return txt
 
+    @property
+    def fields(self):
+        return list(self.sacct(format="all").columns)
+
     def sbatch(self, **kwargs):
-        jobid = sbatch(self.jobscript, wrap=self.wrap, **kwargs)
+        config = self.kwargs.copy()
+        config.update(kwargs)
+        jobid = sbatch(self.jobscript, wrap=self.wrap, **config)
+        self.scontrol = scontrol.show(jobid=jobid)
         if self.jobid is None:
             self.jobid = jobid
             return self
         job = copy.copy(self)
         job.jobid = jobid
         return job
+
+    def sacct(self, **kwargs):
+        return sacct(jobid=self.jobid, **kwargs)
+
+    def jobinfo(self, **kwargs):
+        return jobinfo(self.jobid, **kwargs)
