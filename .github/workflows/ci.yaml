@@ -30,8 +30,8 @@ jobs:
           mamba-version: "*"
           activate-environment: enjoy-slurm-test
           auto-activate-base: false
-         
-      - name: Setup dask-jobqueue conda environment 
+
+      - name: Setup dask-jobqueue conda environment
         if: matrix.jobqueue == 'none'
         run: |
           mamba env update -f ci/environment.yml
