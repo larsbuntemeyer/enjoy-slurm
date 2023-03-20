@@ -1,0 +1,60 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash -l {0}
+    strategy:
+      fail-fast: false
+      matrix:
+        jobqueue: ["slurm"]
+
+    steps:
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.7.0
+        with:
+            access_token: ${{ github.token }}
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Setup Empty Conda Environment with Mamba
+        if: matrix.jobqueue == 'none'
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          channels: conda-forge
+          mamba-version: "*"
+          activate-environment: enjoy-slurm-test
+          auto-activate-base: false
+         
+      - name: Setup dask-jobqueue conda environment 
+        if: matrix.jobqueue == 'none'
+        run: |
+          mamba env update -f ci/environment.yml
+          mamba list
+
+      - name: Setup Job queuing system
+        if: matrix.jobqueue != 'none'
+        run: |
+          source ci/${{ matrix.jobqueue }}.sh
+          jobqueue_before_install
+
+      - name: Install enjoy-slurm
+        run: |
+          source ci/${{ matrix.jobqueue }}.sh
+          jobqueue_install
+
+      - name: Test
+        run: |
+          source ci/${{ matrix.jobqueue }}.sh
+          jobqueue_script
+
+      - name: Cleanup
+        if: always()
+        run: |
+          source ci/${{ matrix.jobqueue }}.sh
+          jobqueue_after_script
