@@ -19,6 +19,7 @@ Slurm jobs on an HPC computer. This package is a successor of the retired [HPC s
 ## Related projects
 
 * [pyslurm](https://github.com/PySlurm/pyslurm)
+* [simple_slurm](https://github.com/amq92/simple_slurm)
 * [ipyslurm](https://github.com/auneri/ipyslurm)
 
 --------
