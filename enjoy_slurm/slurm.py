@@ -1,4 +1,7 @@
 import subprocess
+import os
+from os import path as op
+import copy
 
 from .utils import (
     kwargs_to_list,
@@ -128,3 +131,38 @@ class scontrol(metaclass=SControl):
 
         """
         return create_scontrol_func("show")(*args, **kwargs)
+
+
+class Job:
+    def __init__(self, job=None, jobid=None, interpreter=None, **kwargs):
+        self.job = job
+        self.jobid = jobid
+        self.interpreter = interpreter
+        if interpreter is None:
+            self.interpreter = "#!/bin/sh"
+        if interpreter == "python":
+            self.interpreter = "#!/usr/bin/env python"
+        self.wrap = None
+        if op.isfile(job):
+            self.jobscript = job
+        else:
+            self.jobscript = None
+            self.wrap = job
+        if self.interpreter is not None:
+            self.wrap = self.interpreter + "\n" + self.wrap
+        self.kwargs = kwargs
+
+    def __repr__(self):
+        txt = f"job         : {self.job}\n"
+        txt += f"jobid       : {self.jobid}\n"
+        txt += f"interpreter : {self.interpreter}"
+        return txt
+
+    def sbatch(self, **kwargs):
+        jobid = sbatch(self.jobscript, wrap=self.wrap, **kwargs)
+        if self.jobid is None:
+            self.jobid = jobid
+            return self
+        job = copy.copy(self)
+        job.jobid = jobid
+        return job
