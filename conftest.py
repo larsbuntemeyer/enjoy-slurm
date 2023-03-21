@@ -2,6 +2,7 @@
 
 import pytest
 
+
 def pytest_addoption(parser):
     parser.addoption(
         "-E",
@@ -59,4 +60,3 @@ def mock_lsf_version(monkeypatch, request):
     except OSError:
         # Provide a fake implementation of lsf_version()
         monkeypatch.setattr(dask_jobqueue.lsf, "lsf_version", lambda: "10")
-
