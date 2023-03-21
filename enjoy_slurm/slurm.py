@@ -45,7 +45,7 @@ def sbatch(jobscript=None, *args, **kwargs):
         + kwargs_to_list(kwargs)
         + jobscript
     )
-    return command
+
     jobid = int(execute(command))
 
     return jobid
