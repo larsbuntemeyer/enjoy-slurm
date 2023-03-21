@@ -56,9 +56,12 @@ def kwargs_to_list(d):
         flag = "--" + k.replace("_", "-")
         r += [flag]
         if k == "dependency" and v is not None:
-            # flag += "=" + parse_dependency(v, d.get("how", None))
             r += parse_dependency(v, d.get("how", None))
-        elif v is not True:
+            continue
+        if k == "kill_on_invalid_dep" and not isinstance(v, str):
+            r += ["no"] if v is False else ["yes"]
+            continue
+        if v is not True:
             r += parse_slurm_arg(v)
         # r += [flag]
     return r

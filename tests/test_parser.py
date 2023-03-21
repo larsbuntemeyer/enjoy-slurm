@@ -26,6 +26,24 @@ def test_kwargs_to_list():
         "--dependency",
         "afterany:1:2:3",
     ]
+    kwargs = {
+        "partition": "test",
+        "dependency": [1, 2, 3],
+        "how": "afterany",
+        "kill_on_invalid_dep": True,
+    }
+    assert kwargs_to_list(kwargs) == [
+        "--partition",
+        "test",
+        "--dependency",
+        "afterany:1:2:3",
+        "--kill-on-invalid-dep",
+        "yes",
+    ]
+    kwargs = {"kill_on_invalid_dep": False}
+    assert kwargs_to_list(kwargs) == ["--kill-on-invalid-dep", "no"]
+    kwargs = {"kill_on_invalid_dep": "yes"}
+    assert kwargs_to_list(kwargs) == ["--kill-on-invalid-dep", "yes"]
 
 
 def test_sacct_format():
