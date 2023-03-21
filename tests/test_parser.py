@@ -17,7 +17,6 @@ def test_parse_dependency():
 
 
 def test_kwargs_to_list():
-
     assert kwargs_to_list({"hello": True}) == ["--hello"]
     assert kwargs_to_list({"hello": False}) == []
     assert kwargs_to_list({"hello": 1}) == ["--hello", "1"]
