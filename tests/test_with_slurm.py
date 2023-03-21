@@ -10,6 +10,11 @@ test_kwargs = {
 
 print(hostname)
 
+if on_levante:
+    kwargs = {"partition": "shared", "account": "ch0636"}
+else:
+    kwargs = {}
+
 
 @requires_slurm
 def test_sbatch():
@@ -30,3 +35,11 @@ def test_partitions():
     for p in partitions:
         pdict = slurm.scontrol.show(partition=p)
         assert p in pdict
+
+
+@requires_slurm
+def test_sacct():
+    jobid = slurm.sbatch(wrap="echo Hello World", **kwargs)
+    acct = slurm.sacct(jobid=jobid)
+    scon = slurm.scontrol.show(jobid=jobid)
+    assert str(jobid) in scon

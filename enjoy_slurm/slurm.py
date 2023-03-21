@@ -2,6 +2,7 @@ import subprocess
 
 from .utils import (
     kwargs_to_list,
+    args_to_list,
     parse_sacct,
     execute,
     create_scontrol_func,
@@ -31,13 +32,20 @@ def sbatch(jobscript=None, *args, **kwargs):
     jobid : int
         Slurm jobid.
 
+
     """
     if jobscript is None:
         jobscript = []
     else:
         jobscript = [jobscript]
 
-    command = ["sbatch", "--parsable"] + list(args) + kwargs_to_list(kwargs) + jobscript
+    command = (
+        ["sbatch", "--parsable"]
+        + args_to_list(args)
+        + kwargs_to_list(kwargs)
+        + jobscript
+    )
+
     jobid = int(execute(command))
 
     return jobid
