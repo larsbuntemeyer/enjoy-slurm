@@ -45,4 +45,3 @@ def pytest_runtest_setup(item):
         [xfail.update(mark.args[0]) for mark in item.iter_markers(name="xfail_env")]
         if env in xfail:
             item.add_marker(pytest.mark.xfail(reason=xfail[env]))
-
