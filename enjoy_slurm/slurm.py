@@ -5,6 +5,7 @@ import copy
 
 from .utils import (
     kwargs_to_list,
+    args_to_list,
     parse_sacct,
     execute,
     create_scontrol_func,
@@ -14,35 +15,60 @@ from .utils import (
 from .config import fields
 
 
-def sbatch(jobscript=None, *args, **kwargs):
+def sbatch(jobscript=None, dependency=None, kill_on_invalid_dep=None, *args, **kwargs):
     """
     Submit a batch script to Slurm
 
-    Many sbatch command line arguments can be passed via **kwargs. For example,
-    the ``partion="compute"`` argument would be translated into the
-    ``--partion=compute`` command line argument for sbatch. For all available
-    options, please consult the sbatch manpage. However, some of the most useful
-    argument are also documented here.
-
+    All of sbatch command line arguments that are not explicitly documented here can
+    still be passed via ``**kwargs``. For example, ``partition="compute"`` would be
+    translated into the ``--partion compute`` command line argument for sbatch.
+    For all available options, please consult the sbatch manpage.
+    However, some of the most useful argument are also documented here.
 
     Parameters
     ----------
     jobscript : str
         Path to jobscript file. If no jobscript is provided, you can use the
         ``wrap`` keyword to directly pass shell commands.
+    depdendency : str, tuple or list
+        A list of jobids this job depends on. This can also an original slurm command
+        as a string, e.g., ``"afterok:1:2:3"``. The default dependency type will be ``afterok``
+        which means that this job will only start if all depedending jobs have exit code 0.
+        If depdendency is a tuple, the first entry defines the dependency type and the second will be the
+        list of jobids, e.g., ``("afterany", [1, 2, 3])``. See also the sbatch manpage for more details.
+    kill_on_invalid_dep : bool or str
+        If a job has an invalid dependency and it can never run this parameter tells Slurm to terminate
+        it or not. A terminated job state will be ``JOB_CANCELLED``. If this option is not specified,
+        the system wide behavior applies. By default the job stays pending with reason ``DependencyNeverSatisfied``
+        or if the kill_invalid_depend is specified in slurm.conf the job is terminated.
 
     Returns
     -------
     jobid : int
         Slurm jobid.
 
+    Examples
+    --------
+    >>> from enjoy_slurm import sbatch
+    >>> jobids = [slurm.sbatch(wrap=f"echo Hello World from job {i}") for in range(0,10)]
+    >>> slurm.sbatch(wrap="All jobs finished", dependency=jobids)
     """
     if jobscript is None:
         jobscript = []
     else:
         jobscript = [jobscript]
 
-    command = ["sbatch", "--parsable"] + list(args) + kwargs_to_list(kwargs) + jobscript
+    kwargs.update(
+        {"dependency": dependency, "kill_on_invalid_dep": kill_on_invalid_dep}
+    )
+
+    command = (
+        ["sbatch", "--parsable"]
+        + args_to_list(args)
+        + kwargs_to_list(kwargs)
+        + jobscript
+    )
+
     jobid = int(execute(command))
 
     return jobid

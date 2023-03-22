@@ -30,11 +30,14 @@ def parse_sacct(csv, jobsteps=None):
     return df
 
 
-def parse_dependency(ids, how=None):
+def parse_dependency(ids):
     """parse dependency arguments to sbatch command line"""
+    how = None
     if isinstance(ids, str):
         return [ids]
-    if how is None:
+    if isinstance(ids, tuple):
+        how, ids = ids
+    if not how:
         how = "afterok"
     if not isinstance(ids, list):
         ids = [ids]
@@ -45,7 +48,24 @@ def parse_slurm_arg(a):
     """parse slurm arguments to str or list of str with colons"""
     if isinstance(a, list):
         return ":".join([str(x) for x in a])
+    if a is True:
+        return []
     return [str(a)]
+
+
+def args_to_list(args):
+    """parse sbatch arguments to list"""
+    args_list = []
+    for a in args:
+        if isinstance(a, list):
+            args_list += a
+        elif "=" in a:
+            args_list += a.split("=")
+        elif " " in a:
+            args_list += a.split()
+        else:
+            args_list.append(a)
+    return args_list
 
 
 def kwargs_to_list(d):
@@ -56,12 +76,22 @@ def kwargs_to_list(d):
         if k in own_kwargs:
             continue
         flag = "--" + k.replace("_", "-")
-        r += [flag]
+
         if k == "dependency" and v is not None:
-            # flag += "=" + parse_dependency(v, d.get("how", None))
-            r += parse_dependency(v, d.get("how", None))
-        elif v is not True:
+            r += [flag]
+            r += parse_dependency(v)
+            continue
+        if k == "kill_on_invalid_dep" and not isinstance(v, str):
+            if v is not None:
+                r += [flag]
+                r += ["no"] if v is False else ["yes"]
+            continue
+        if v:
+            r += [flag]
             r += parse_slurm_arg(v)
+            continue
+        if v is False:
+            continue
         # r += [flag]
     return r
 
