@@ -189,6 +189,32 @@ class Job:
             Job instance either created from jobid or jobscript.
         """
 
+        self.job = job
+        self.jobid = jobid
+        self.kwargs = kwargs
+
+        if job is None:
+            self.job = ""
+        self.wrap = None
+
+        if op.isfile(self.job):
+            self.jobscript = op.abspath(self.job)
+        else:
+            self.jobscript = None
+            self.wrap = self.job
+
+        self.interpreter = interpreter
+        if interpreter is None and self.wrap:
+            self.interpreter = "#!/bin/sh"
+        if interpreter == "python":
+            self.interpreter = "#!/usr/bin/env python"
+
+        if self.interpreter is not None:
+            self.wrap = self.interpreter + "\n" + self.wrap
+
+        if self.jobid and not self.jobinfo():
+            warn(f"jobid {self.jobid} seems to be invalid")
+
     def __eq__(self, other):
         return self.jobid == other.jobid
 
