@@ -64,7 +64,6 @@ def sbatch(jobscript=None, dependency=None, kill_on_invalid_dep=None, *args, **k
         + kwargs_to_list(kwargs)
         + jobscript
     )
-    return command
 
     jobid = int(execute(command))
 
