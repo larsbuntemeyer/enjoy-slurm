@@ -11,8 +11,8 @@ from enjoy_slurm.config import default_sacct_format
 
 def test_parse_dependency():
     assert parse_dependency([1, 2, 3]) == ["afterok:1:2:3"]
-    assert parse_dependency([1, 2, 3], how="afterany") == ["afterany:1:2:3"]
-    assert parse_dependency([1, 2, 3], how="afterany") == ["afterany:1:2:3"]
+    assert parse_dependency((None, [1, 2, 3])) == ["afterok:1:2:3"]
+    assert parse_dependency(("afterany", [1, 2, 3])) == ["afterany:1:2:3"]
     assert parse_dependency("afterany:1:2:3") == ["afterany:1:2:3"]
 
 
@@ -28,7 +28,7 @@ def test_kwargs_to_list():
         "--dependency",
         "afterok:1:2:3",
     ]
-    kwargs = {"partition": "test", "dependency": [1, 2, 3], "how": "afterany"}
+    kwargs = {"partition": "test", "dependency": ("afterany", [1, 2, 3])}
     assert kwargs_to_list(kwargs) == [
         "--partition",
         "test",
@@ -37,8 +37,7 @@ def test_kwargs_to_list():
     ]
     kwargs = {
         "partition": "test",
-        "dependency": [1, 2, 3],
-        "how": "afterany",
+        "dependency": ("afterany", [1, 2, 3]),
         "kill_on_invalid_dep": True,
     }
     assert kwargs_to_list(kwargs) == [

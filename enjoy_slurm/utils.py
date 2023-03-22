@@ -28,11 +28,14 @@ def parse_sacct(csv, jobsteps=None):
     return df
 
 
-def parse_dependency(ids, how=None):
+def parse_dependency(ids):
     """parse dependency arguments to sbatch command line"""
+    how = None
     if isinstance(ids, str):
         return [ids]
-    if how is None:
+    if isinstance(ids, tuple):
+        how, ids = ids
+    if not how:
         how = "afterok"
     if not isinstance(ids, list):
         ids = [ids]
@@ -74,7 +77,7 @@ def kwargs_to_list(d):
 
         if k == "dependency" and v is not None:
             r += [flag]
-            r += parse_dependency(v, d.get("how", None))
+            r += parse_dependency(v)
             continue
         if k == "kill_on_invalid_dep" and not isinstance(v, str):
             r += [flag]
