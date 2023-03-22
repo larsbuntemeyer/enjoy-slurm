@@ -14,12 +14,11 @@ def sbatch(jobscript=None, dependency=None, kill_on_invalid_dep=None, *args, **k
     """
     Submit a batch script to Slurm
 
-    Many sbatch command line arguments can be passed via **kwargs. For example,
-    the ``partion="compute"`` argument would be translated into the
-    ``--partion=compute`` command line argument for sbatch. For all available
-    options, please consult the sbatch manpage. However, some of the most useful
-    argument are also documented here.
-
+    All of sbatch command line arguments that are not explicitly documented here can
+    still be passed via ``**kwargs``. For example, ``partition="compute"`` would be
+    translated into the ``--partion compute`` command line argument for sbatch.
+    For all available options, please consult the sbatch manpage.
+    However, some of the most useful argument are also documented here.
 
     Parameters
     ----------
