@@ -2,6 +2,7 @@ import subprocess
 import os
 from os import path as op
 import copy
+from warnings import warn
 
 from .utils import (
     kwargs_to_list,
@@ -15,7 +16,14 @@ from .utils import (
 from .config import fields
 
 
-def sbatch(jobscript=None, dependency=None, kill_on_invalid_dep=None, *args, **kwargs):
+def sbatch(
+    jobscript=None,
+    dependency=None,
+    kill_on_invalid_dep=None,
+    verbose=False,
+    *args,
+    **kwargs,
+):
     """
     Submit a batch script to Slurm
 
@@ -69,7 +77,7 @@ def sbatch(jobscript=None, dependency=None, kill_on_invalid_dep=None, *args, **k
         + jobscript
     )
 
-    jobid = int(execute(command))
+    jobid = int(execute(command, verbose=verbose))
 
     return jobid
 
@@ -166,21 +174,24 @@ class Job:
         self.job = job
         if job is None:
             self.job = ""
-        self.jobid = jobid
-        self.interpreter = interpreter
-        if interpreter is None:
-            self.interpreter = "#!/bin/sh"
-        if interpreter == "python":
-            self.interpreter = "#!/usr/bin/env python"
         self.wrap = None
         if op.isfile(self.job):
-            self.jobscript = self.job
+            self.jobscript = op.abspath(self.job)
         else:
             self.jobscript = None
             self.wrap = self.job
+        self.jobid = jobid
+        self.interpreter = interpreter
+        if interpreter is None and self.wrap:
+            self.interpreter = "#!/bin/sh"
+        if interpreter == "python":
+            self.interpreter = "#!/usr/bin/env python"
+
         if self.interpreter is not None:
             self.wrap = self.interpreter + "\n" + self.wrap
         self.kwargs = kwargs
+        if self.jobid and not self.jobinfo():
+            warn(f"jobid {self.jobid} seems to be invalid")
 
     def __eq__(self, other):
         return self.jobid == other.jobid
@@ -189,10 +200,10 @@ class Job:
         return self.jobinfo(format=key)
 
     def __repr__(self):
-        txt = f"job         : {self.job}\n"
+        # txt = f"job         : {self.job}\n"
+        txt = f"jobscript   : {self.jobscript}\n"
         txt += f"jobid       : {self.jobid}\n"
-        txt += f"interpreter : {self.interpreter}\n"
-        txt += f"kwargs      : {self.kwargs}\n"
+        txt += f"defaults    : {self.kwargs}\n"
         return txt
 
     @property
@@ -216,3 +227,7 @@ class Job:
 
     def jobinfo(self, **kwargs):
         return jobinfo(self.jobid, **kwargs)
+
+
+def get_jobs(*args, **kwargs):
+    pass

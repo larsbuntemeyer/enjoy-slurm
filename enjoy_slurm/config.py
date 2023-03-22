@@ -4,6 +4,7 @@ default_sacct_format = [
     "ncpus",
     "ntasks",
     "state",
+    "start",
     "end",
     "jobname",
 ]

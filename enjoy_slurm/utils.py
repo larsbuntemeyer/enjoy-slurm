@@ -3,6 +3,7 @@ from io import StringIO
 from itertools import groupby
 import subprocess
 from .config import default_sacct_format
+import numpy as np
 
 delimiter = "|"
 
@@ -26,7 +27,9 @@ def parse_sacct(csv, jobsteps=None):
     if jobsteps == "minimal":
         # ensure str
         df["JobID"] = df.JobID.astype(str)
-        df = df[df["JobID"].str.isnumeric()].reset_index()
+        df = df[df["JobID"].str.isnumeric()].reset_index(drop=True)
+        df["JobID"] = df.JobID.astype(np.int64)
+        df = df.convert_dtypes()
     return df
 
 
@@ -41,13 +44,14 @@ def parse_dependency(ids):
         how = "afterok"
     if not isinstance(ids, list):
         ids = [ids]
-    return [":".join([how] + [str(id) for id in ids])]
+    return [":".join([how] + list(map(str, ids)))]
 
 
-def parse_slurm_arg(a):
+def parse_slurm_arg(a, list_concat=","):
     """parse slurm arguments to str or list of str with colons"""
-    if isinstance(a, list):
-        return ":".join([str(x) for x in a])
+    print(a, type(a))
+    if isinstance(a, (list, tuple)):
+        return [list_concat.join(map(str, a))]
     if a is True:
         return []
     return [str(a)]
@@ -71,12 +75,12 @@ def args_to_list(args):
 def kwargs_to_list(d):
     """parse arguments to command line arguments for sbatch"""
     r = []
+    list_concat = ","
     for k, v in d.items():
         # ignore own kwargs
         if k in own_kwargs:
             continue
         flag = "--" + k.replace("_", "-")
-
         if k == "dependency" and v is not None:
             r += [flag]
             r += parse_dependency(v)
@@ -88,7 +92,7 @@ def kwargs_to_list(d):
             continue
         if v:
             r += [flag]
-            r += parse_slurm_arg(v)
+            r += parse_slurm_arg(v, list_concat)
             continue
         if v is False:
             continue
@@ -132,7 +136,9 @@ def create_scontrol_func(name):
     return func
 
 
-def execute(command, return_type="stdout", decode=True):
+def execute(command, return_type="stdout", decode=True, verbose=False):
+    if verbose is True:
+        print(f"executing: {' '.join(command)}")
     output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if output.returncode != 0:
         raise Exception(output.stderr.decode("utf-8"))
