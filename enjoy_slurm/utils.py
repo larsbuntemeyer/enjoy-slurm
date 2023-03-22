@@ -49,7 +49,6 @@ def parse_dependency(ids):
 
 def parse_slurm_arg(a, list_concat=","):
     """parse slurm arguments to str or list of str with colons"""
-    print(a, type(a))
     if isinstance(a, (list, tuple)):
         return [list_concat.join(map(str, a))]
     if a is True:

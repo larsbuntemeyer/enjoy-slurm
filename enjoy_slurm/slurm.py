@@ -171,27 +171,23 @@ class scontrol(metaclass=SControl):
 
 class Job:
     def __init__(self, job=None, jobid=None, interpreter=None, **kwargs):
-        self.job = job
-        if job is None:
-            self.job = ""
-        self.wrap = None
-        if op.isfile(self.job):
-            self.jobscript = op.abspath(self.job)
-        else:
-            self.jobscript = None
-            self.wrap = self.job
-        self.jobid = jobid
-        self.interpreter = interpreter
-        if interpreter is None and self.wrap:
-            self.interpreter = "#!/bin/sh"
-        if interpreter == "python":
-            self.interpreter = "#!/usr/bin/env python"
+        """
+        Slurm Job class.
 
-        if self.interpreter is not None:
-            self.wrap = self.interpreter + "\n" + self.wrap
-        self.kwargs = kwargs
-        if self.jobid and not self.jobinfo():
-            warn(f"jobid {self.jobid} seems to be invalid")
+        The Job class can manage meta data and submission of a Slurm job.
+
+        Parameters
+        ----------
+        job : str
+            Path to jobscript or a command that should be wrapped.
+        jobid : int
+            Jobid to create a Job instance from.
+
+        Returns
+        -------
+        job : Job
+            Job instance either created from jobid or jobscript.
+        """
 
     def __eq__(self, other):
         return self.jobid == other.jobid
@@ -208,9 +204,11 @@ class Job:
 
     @property
     def fields(self):
+        """Available job attributes"""
         return list(self.sacct(format="all").columns)
 
     def sbatch(self, **kwargs):
+        """Submit job to Slurm"""
         config = self.kwargs.copy()
         config.update(kwargs)
         jobid = sbatch(self.jobscript, wrap=self.wrap, **config)
@@ -223,11 +221,9 @@ class Job:
         return job
 
     def sacct(self, **kwargs):
+        """Get accounting for this job"""
         return sacct(jobid=self.jobid, **kwargs)
 
     def jobinfo(self, **kwargs):
+        """Jobinfo as dictionary"""
         return jobinfo(self.jobid, **kwargs)
-
-
-def get_jobs(*args, **kwargs):
-    pass

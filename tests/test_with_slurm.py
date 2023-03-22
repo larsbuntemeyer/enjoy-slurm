@@ -1,5 +1,5 @@
 import pytest
-import enjoy_slurm as slurm
+from enjoy_slurm import Job, sbatch, sacct, scontrol
 from . import hostname, requires_slurm, on_levante, requires_levante
 
 
@@ -22,7 +22,7 @@ def test_sbatch():
         kwargs = {"partition": "shared", "account": "ch0636"}
     else:
         kwargs = {}
-    jobid = slurm.sbatch(wrap="echo Hello World", **kwargs)
+    jobid = sbatch(wrap="echo Hello World", **kwargs)
     print(jobid)
 
 
@@ -33,13 +33,25 @@ def test_partitions():
     else:
         partitions = test_kwargs["docker"]["partitions"]
     for p in partitions:
-        pdict = slurm.scontrol.show(partition=p)
+        pdict = scontrol.show(partition=p)
         assert p in pdict
 
 
 @requires_slurm
 def test_sacct():
-    jobid = slurm.sbatch(wrap="echo Hello World", **kwargs)
-    acct = slurm.sacct(jobid=jobid)
-    scon = slurm.scontrol.show(jobid=jobid)
+    jobid = sbatch(wrap="echo Hello World", **kwargs)
+    acct = sacct(jobid=jobid)
+    scon = scontrol.show(jobid=jobid)
     assert str(jobid) in scon
+
+
+@requires_slurm
+def test_job():
+    import time
+
+    jobid = sbatch(wrap="echo Hello World", **kwargs)
+    time.sleep(5)
+    job = Job(jobid=jobid)
+    assert job.jobid == jobid
+    assert job.partition
+    assert job.account
