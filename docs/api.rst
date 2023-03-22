@@ -24,6 +24,3 @@ Job
    :toctree: generated/
 
    Job
-   Job.sbatch
-   Job.sacct
-   Job.fields
