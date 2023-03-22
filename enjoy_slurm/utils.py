@@ -80,8 +80,9 @@ def kwargs_to_list(d):
             r += parse_dependency(v)
             continue
         if k == "kill_on_invalid_dep" and not isinstance(v, str):
-            r += [flag]
-            r += ["no"] if v is False else ["yes"]
+            if v is not None:
+                r += [flag]
+                r += ["no"] if v is False else ["yes"]
             continue
         if v:
             r += [flag]

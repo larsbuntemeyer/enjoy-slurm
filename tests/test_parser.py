@@ -50,8 +50,14 @@ def test_kwargs_to_list():
     ]
     kwargs = {"kill_on_invalid_dep": False}
     assert kwargs_to_list(kwargs) == ["--kill-on-invalid-dep", "no"]
+    kwargs = {"kill_on_invalid_dep": True}
+    assert kwargs_to_list(kwargs) == ["--kill-on-invalid-dep", "yes"]
+    kwargs = {"kill_on_invalid_dep": "no"}
+    assert kwargs_to_list(kwargs) == ["--kill-on-invalid-dep", "no"]
     kwargs = {"kill_on_invalid_dep": "yes"}
     assert kwargs_to_list(kwargs) == ["--kill-on-invalid-dep", "yes"]
+    kwargs = {"kill_on_invalid_dep": None}
+    assert kwargs_to_list(kwargs) == []
 
 
 def test_args_to_list():
