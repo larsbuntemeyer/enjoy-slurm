@@ -76,6 +76,7 @@ def parse_header(header):
     """parses Slurm header into dict"""
     lines = header.splitlines()
     header = None
+    # ignore shebang
     if lines[0].startswith("#!"):
         header = lines[0]
         lines = lines[1:]
@@ -87,7 +88,7 @@ def parse_header(header):
 
 
 def split_script(script, strip=True):
-    """split a script into Slurm header and commands
+    """Split a script into Slurm header, commands and interpreter
 
     The split is defined by the first non-comment non-whitespace line.
 
@@ -98,14 +99,18 @@ def split_script(script, strip=True):
 
     Returns
     -------
-    header and command part of a Slurm jobscript.
+    Slurm header, command part and interpreter of a Slurm jobscript.
 
     """
     header = ""
-    splits = script.splitlines(keepends=True)
-    for i, line in enumerate(splits):
+    shebang = ""
+    lines = script.splitlines(keepends=True)
+    if lines[0].startswith("#!"):
+        shebang = lines[0].strip()
+        lines = lines[1:]
+    for i, line in enumerate(lines):
         if not line.startswith("#") and line.strip():
             break
         header += "" if not line.strip() and strip else line
 
-    return header, "".join(splits[i:])
+    return header, "".join(lines[i:]), shebang

@@ -88,8 +88,8 @@ def test_sacct_format():
 
 
 def test_split():
+    shebang = "#!/usr/bin/env python          \n"
     header = (
-        "#!/usr/bin/env python          \n"
         "#SBATCH --partition=compute    \n"
         "#SBATCH --nodes 1              \n"
         "#SBATCH--ntasks 12             \n"
@@ -103,11 +103,13 @@ def test_split():
     )
     command = "echo Hello World\n"
 
-    h, c = split_script(header + command, strip=False)
+    h, c, s = split_script(shebang + header + command, strip=False)
     assert h == header
     assert c == command
-    h, c = split_script(header + command, strip=True)
+    assert s == shebang.strip()
+    h, c, s = split_script(shebang + header + command, strip=True)
     assert c == command
+    assert s == shebang.strip()
 
 
 def test_parse_header():
