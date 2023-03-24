@@ -126,6 +126,7 @@ def test_parse_header():
         "       \n"
         "          \n"
     )
+
     expect = {
         "partition": "compute",
         "nodes": "1",
@@ -134,6 +135,16 @@ def test_parse_header():
         "mem-per-cpu": "1920",
         "account": "1234",
     }
-    args = parse_header(header)
+    args = parse_header(header, eval_types=False)
+    assert args == expect
 
+    expect = {
+        "partition": "compute",
+        "nodes": 1,
+        "ntasks": 12,
+        "time": "01:00:00",
+        "mem-per-cpu": 1920,
+        "account": 1234,
+    }
+    args = parse_header(header, eval_types=True)
     assert args == expect

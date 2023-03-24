@@ -3,6 +3,15 @@ from io import StringIO
 from .config import delimiter
 import numpy as np
 import re
+import pandas as pd
+
+
+def _maybe_eval_types(d, only_values=False):
+    """parse a dictionary with strings to python types using pandas"""
+    df = pd.DataFrame(d, index=[0])
+    cols = df.columns
+    df[cols] = df[cols].apply(pd.to_numeric, errors="ignore")
+    return df.iloc[0].to_dict()
 
 
 def parse_sacct(csv, jobsteps=None):
@@ -74,8 +83,22 @@ def parse_header_kwarg(line):
     return {k.strip(): v.strip()}
 
 
-def parse_header(header):
-    """parses Slurm header into dict"""
+def parse_header(header, eval_types=True):
+    """Parses Slurm header into dict
+
+    Parameters
+    ----------
+    header : str
+        Jobscript containing a Slurm header.
+    eval_types : bool
+        Evaluate strings in dictionary
+
+    Returns
+    -------
+    Slurm config : dict
+        A dictionary containing the slurm configuration.
+
+    """
     lines = header.splitlines()
     header = None
     # ignore shebang
@@ -86,6 +109,8 @@ def parse_header(header):
     for l in lines:
         if l.startswith("#SBATCH"):
             kwargs.update(parse_header_kwarg(l.replace("#SBATCH", "").strip()))
+    if eval_types is True:
+        return _maybe_eval_types(kwargs)
     return kwargs
 
 
