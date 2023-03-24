@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def parse_sacct(csv, jobsteps=None):
     """convert parsable sacct output to dataframe"""
     df = pd.read_csv(StringIO(csv), delimiter=delimiter)
