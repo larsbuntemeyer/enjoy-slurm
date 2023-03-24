@@ -20,11 +20,14 @@ Slurm jobs on an HPC computer. This package is a successor of the retired [HPC s
 
 ```python
 import enjoy_slurm as slurm
-jobid = slurm.sbatch("job.sh")
+
+jobid = slurm.sbatch("job.sh", partition="compute", account="my_account")
 acct = slurm.sacct(jobid=jobid)
 
 # run another job that depends on the first
-jobid1 = slurm.sbatch("another_job.sh", dependency=jobid)
+jobid1 = slurm.sbatch(
+    "another_job.sh", dependency=jobid, partition="shared", account="my_account"
+)
 acct1 = slurm.sacct(jobid1)
 ```
 
