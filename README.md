@@ -28,7 +28,7 @@ acct = slurm.sacct(jobid=jobid)
 jobid1 = slurm.sbatch(
     "another_job.sh", dependency=jobid, partition="shared", account="my_account"
 )
-acct1 = slurm.sacct(jobid1)
+acct1 = slurm.sacct(jobid=jobid1)
 ```
 
 ## Related projects
