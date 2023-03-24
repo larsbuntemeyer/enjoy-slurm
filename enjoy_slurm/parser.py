@@ -69,6 +69,8 @@ def parse_header_kwarg(line):
         line = line[2:]
     # split either by space or =
     k, v = re.split(r"\s|=", line, 1)
+    # remove comments after SBATCH #
+    v = v.split("#", 1)[0]
     return {k.strip(): v.strip()}
 
 

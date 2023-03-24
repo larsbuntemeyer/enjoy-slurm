@@ -115,7 +115,7 @@ def test_split():
 def test_parse_header():
     header = (
         "#!/usr/bin/env python          \n"
-        "#SBATCH --partition=compute    \n"
+        "#SBATCH --partition=compute  # this is the partition   \n"
         "#SBATCH --nodes 1              \n"
         "#SBATCH--ntasks 12             \n"
         "#SBATCH    --time    01:00:00  \n"
