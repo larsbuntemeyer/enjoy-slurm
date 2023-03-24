@@ -7,7 +7,7 @@ enjoy-slurm
 [![Documentation Status](https://readthedocs.org/projects/enjoy-slurm/badge/?version=latest)](https://enjoy-slurm.readthedocs.io/en/latest/?badge=latest)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/larsbuntemeyer/enjoy-slurm/main.svg)](https://results.pre-commit.ci/latest/github/larsbuntemeyer/enjoy-slurm/main)
 
-`enjoy-slurm` is a naive python slurm control package for python. It does interact with Slurm exactly as any user would do, simply through the command
+`enjoy-slurm` is a naive slurm control package for python. It does interact with Slurm exactly as any user would do, simply through the command
 line tools and arguments. That's why we call it *naive*. However, it should avoid having to rewrite some scripts required to submit and control many
 Slurm jobs on an HPC computer. This package is a successor of the retired [HPC scheduler package](https://github.com/larsbuntemeyer/hpc-scheduler).
 
