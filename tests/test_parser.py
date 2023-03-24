@@ -1,11 +1,11 @@
 import pytest
 
 from enjoy_slurm.utils import (
-    parse_dependency,
     kwargs_to_list,
     handle_sacct_format,
     args_to_list,
 )
+from enjoy_slurm.parser import split_script, parse_header, parse_dependency
 from enjoy_slurm.config import default_sacct_format
 
 
@@ -85,3 +85,53 @@ def test_sacct_format():
     assert handle_sacct_format(test_format) == ["--format"] + [",".join(test_format)]
     # brief overwrites format
     assert handle_sacct_format(test_format, {"brief": True}) == ["--brief"]
+
+
+def test_split():
+    header = (
+        "#!/usr/bin/env python          \n"
+        "#SBATCH --partition=compute    \n"
+        "#SBATCH --nodes 1              \n"
+        "#SBATCH--ntasks 12             \n"
+        "#SBATCH    --time    01:00:00  \n"
+        "#SBATCH --mem-per-cpu=1920     \n"
+        "                               \n"
+        "#comment                       \n"
+        "#SBATCH --account       1234   \n"
+        "       \n"
+        "          \n"
+    )
+    command = "echo Hello World\n"
+
+    h, c = split_script(header + command, strip=False)
+    assert h == header
+    assert c == command
+    h, c = split_script(header + command, strip=True)
+    assert c == command
+
+
+def test_parse_header():
+    header = (
+        "#!/usr/bin/env python          \n"
+        "#SBATCH --partition=compute    \n"
+        "#SBATCH --nodes 1              \n"
+        "#SBATCH--ntasks 12             \n"
+        "#SBATCH    --time    01:00:00  \n"
+        "#SBATCH --mem-per-cpu=1920     \n"
+        "                               \n"
+        "#comment                       \n"
+        "#SBATCH --account       1234   \n"
+        "       \n"
+        "          \n"
+    )
+    expect = {
+        "partition": "compute",
+        "nodes": "1",
+        "ntasks": "12",
+        "time": "01:00:00",
+        "mem-per-cpu": "1920",
+        "account": "1234",
+    }
+    args = parse_header(header)
+
+    assert args == expect

@@ -77,6 +77,15 @@ def create_scontrol_func(name):
     return func
 
 
+def rewrite_jobscript(jobscript, options):
+    with open(jobscript) as f:
+        script = f.read()
+
+
+def get_slurm_header(script):
+    return script.splitlines()
+
+
 def execute(command, return_type="stdout", decode=True, verbose=False):
     if verbose is True:
         print(f"executing: {' '.join(command)}")

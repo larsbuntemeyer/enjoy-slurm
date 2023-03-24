@@ -2,6 +2,7 @@ import pandas as pd
 from io import StringIO
 from .config import delimiter
 import numpy as np
+import re
 
 
 def parse_sacct(csv, jobsteps=None):
@@ -60,3 +61,51 @@ def parse_scontrol_show(output):
     except Exception:
         results = output
     return results
+
+
+def parse_header_kwarg(line):
+    """parses a Slurm header line into a dict"""
+    if line.startswith("--"):
+        line = line[2:]
+    # split either by space or =
+    k, v = re.split(r"\s|=", line, 1)
+    return {k.strip(): v.strip()}
+
+
+def parse_header(header):
+    """parses Slurm header into dict"""
+    lines = header.splitlines()
+    header = None
+    if lines[0].startswith("#!"):
+        header = lines[0]
+        lines = lines[1:]
+    kwargs = {}
+    for l in lines:
+        if l.startswith("#SBATCH"):
+            kwargs.update(parse_header_kwarg(l.replace("#SBATCH", "").strip()))
+    return kwargs
+
+
+def split_script(script, strip=True):
+    """split a script into Slurm header and commands
+
+    The split is defined by the first non-comment non-whitespace line.
+
+    Parameters
+    ----------
+    strip : bool
+        Remove blank lines from header.
+
+    Returns
+    -------
+    header and command part of a Slurm jobscript.
+
+    """
+    header = ""
+    splits = script.splitlines(keepends=True)
+    for i, line in enumerate(splits):
+        if not line.startswith("#") and line.strip():
+            break
+        header += "" if not line.strip() and strip else line
+
+    return header, "".join(splits[i:])
