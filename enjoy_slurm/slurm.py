@@ -13,6 +13,8 @@ from .utils import (
     handle_sacct_format,
 )
 
+from .parser import parse_sacct
+
 from .config import fields
 
 
