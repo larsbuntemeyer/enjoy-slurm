@@ -16,6 +16,18 @@ Slurm jobs on an HPC computer. This package is a successor of the retired [HPC s
 * Use `sbatch`, `sacct`, `scontrol` etc. directly from python with a pythonic API.
 * Parse command outputs into python objects like pandas DataFrames or dictionaries.
 
+## Examples
+
+```python
+import enjoy_slurm as slurm
+jobid = slurm.sbatch("job.sh")
+acct = slurm.sacct(jobid=jobid)
+
+# run another job that depends on the first
+jobid1 = slurm.sbatch("another_job.sh", dependency=jobid)
+acct1 = slurm.sacct(jobid1)
+```
+
 ## Related projects
 
 * [pyslurm](https://github.com/PySlurm/pyslurm)
