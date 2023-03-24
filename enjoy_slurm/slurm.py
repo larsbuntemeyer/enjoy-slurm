@@ -7,7 +7,6 @@ from warnings import warn
 from .utils import (
     kwargs_to_list,
     args_to_list,
-    parse_sacct,
     execute,
     create_scontrol_func,
     handle_sacct_format,

@@ -1,13 +1,11 @@
 import pandas as pd
-from io import StringIO
 from itertools import groupby
 import subprocess
 from .config import default_sacct_format
 import numpy as np
 
-from .parser import parse_dependency
+from .parser import parse_dependency, parse_slurm_arg, parse_scontrol_show
 
-delimiter = "|"
 
 own_kwargs = ["how"]
 
