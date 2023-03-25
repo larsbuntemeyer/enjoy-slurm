@@ -34,29 +34,12 @@ def args_to_list(args):
 
 def kwargs_to_list(d):
     """parse arguments to command line arguments for sbatch"""
+    kwargs = kwargs_to_slurm(d)
     r = []
-    list_concat = ","
-    for k, v in d.items():
-        # ignore own kwargs
-        if k in skip_args:
-            continue
-        flag = "--" + k.replace("_", "-")
-        if k == "dependency" and v is not None:
-            r += [flag]
-            r += parse_dependency(v)
-            continue
-        if k == "kill_on_invalid_dep" and not isinstance(v, str):
-            if v is not None:
-                r += [flag]
-                r += ["no"] if v is False else ["yes"]
-            continue
+    for k, v in kwargs.items():
+        r.append(k),
         if v:
-            r += [flag]
-            r += parse_slurm_arg(v, list_concat)
-            continue
-        if v is False:
-            continue
-        # r += [flag]
+            r.append(v)
     return r
 
 
@@ -84,14 +67,14 @@ def parse_dependency(ids):
     """parse dependency arguments to sbatch command line"""
     how = None
     if isinstance(ids, str):
-        return [ids]
+        return ids
     if isinstance(ids, tuple):
         how, ids = ids
     if not how:
         how = "afterok"
     if not isinstance(ids, list):
         ids = [ids]
-    return [":".join([how] + list(map(str, ids)))]
+    return ":".join([how] + list(map(str, ids)))
 
 
 def parse_slurm_arg(a, list_concat=","):
@@ -99,8 +82,8 @@ def parse_slurm_arg(a, list_concat=","):
     if isinstance(a, (list, tuple)):
         return [list_concat.join(map(str, a))]
     if a is True:
-        return []
-    return [str(a)]
+        return ""
+    return str(a)
 
 
 def parse_scontrol_show(output):
@@ -124,6 +107,30 @@ def parse_scontrol_show(output):
     except Exception:
         results = output
     return results
+
+
+def kwargs_to_slurm(d):
+    """parse arguments to command line arguments for sbatch"""
+    r = {}
+    list_concat = ","
+    for k, v in d.items():
+        # ignore own kwargs
+        if k in skip_args:
+            continue
+        flag = "--" + k.replace("_", "-")
+        if k == "dependency" and v is not None:
+            r[flag] = parse_dependency(v)
+            continue
+        if k == "kill_on_invalid_dep" and not isinstance(v, str):
+            if v is not None:
+                r[flag] = "no" if v is False else "yes"
+            continue
+        if v:
+            r[flag] = parse_slurm_arg(v, list_concat)
+            continue
+        if v is False:
+            continue
+    return r
 
 
 def parse_header_kwarg(line):

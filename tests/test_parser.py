@@ -7,15 +7,16 @@ from enjoy_slurm.parser import (
     kwargs_to_list,
     handle_sacct_format,
     args_to_list,
+    kwargs_to_slurm,
 )
 from enjoy_slurm.config import default_sacct_format
 
 
 def test_parse_dependency():
-    assert parse_dependency([1, 2, 3]) == ["afterok:1:2:3"]
-    assert parse_dependency((None, [1, 2, 3])) == ["afterok:1:2:3"]
-    assert parse_dependency(("afterany", [1, 2, 3])) == ["afterany:1:2:3"]
-    assert parse_dependency("afterany:1:2:3") == ["afterany:1:2:3"]
+    assert parse_dependency([1, 2, 3]) == "afterok:1:2:3"
+    assert parse_dependency((None, [1, 2, 3])) == "afterok:1:2:3"
+    assert parse_dependency(("afterany", [1, 2, 3])) == "afterany:1:2:3"
+    assert parse_dependency("afterany:1:2:3") == "afterany:1:2:3"
 
 
 def test_kwargs_to_list():
@@ -60,6 +61,22 @@ def test_kwargs_to_list():
     assert kwargs_to_list(kwargs) == ["--kill-on-invalid-dep", "yes"]
     kwargs = {"kill_on_invalid_dep": None}
     assert kwargs_to_list(kwargs) == []
+
+
+def test_kwargs_to_slurm():
+    kwargs = {
+        "partition": "test",
+        "dependency": ("afterany", [1, 2, 3]),
+        "kill_on_invalid_dep": True,
+        "hold": True,
+    }
+    expect = {
+        "--partition": "test",
+        "--dependency": "afterany:1:2:3",
+        "--kill-on-invalid-dep": "yes",
+        "--hold": "",
+    }
+    assert kwargs_to_slurm(kwargs) == expect
 
 
 def test_args_to_list():
