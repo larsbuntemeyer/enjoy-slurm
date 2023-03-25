@@ -1,5 +1,7 @@
 delimiter = "|"
 
+skip_args = []
+
 default_sacct_format = [
     "jobid",
     "elapsed",

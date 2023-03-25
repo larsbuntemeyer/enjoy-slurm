@@ -4,15 +4,9 @@ from os import path as op
 import copy
 from warnings import warn
 
-from .utils import (
-    kwargs_to_list,
-    args_to_list,
-    execute,
-    create_scontrol_func,
-    handle_sacct_format,
-)
+from .utils import execute, create_scontrol_func
 
-from .parser import parse_sacct
+from .parser import parse_sacct, kwargs_to_list, args_to_list, handle_sacct_format
 
 from .config import fields
 
