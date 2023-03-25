@@ -1,19 +1,23 @@
 import pytest
 
-from enjoy_slurm.utils import (
-    parse_dependency,
+from enjoy_slurm.parser import (
+    split_script,
+    parse_header,
+    _parse_dependency,
     kwargs_to_list,
     handle_sacct_format,
     args_to_list,
+    kwargs_to_slurm,
+    create_header,
 )
 from enjoy_slurm.config import default_sacct_format
 
 
 def test_parse_dependency():
-    assert parse_dependency([1, 2, 3]) == ["afterok:1:2:3"]
-    assert parse_dependency((None, [1, 2, 3])) == ["afterok:1:2:3"]
-    assert parse_dependency(("afterany", [1, 2, 3])) == ["afterany:1:2:3"]
-    assert parse_dependency("afterany:1:2:3") == ["afterany:1:2:3"]
+    assert _parse_dependency([1, 2, 3]) == "afterok:1:2:3"
+    assert _parse_dependency((None, [1, 2, 3])) == "afterok:1:2:3"
+    assert _parse_dependency(("afterany", [1, 2, 3])) == "afterany:1:2:3"
+    assert _parse_dependency("afterany:1:2:3") == "afterany:1:2:3"
 
 
 def test_kwargs_to_list():
@@ -60,6 +64,22 @@ def test_kwargs_to_list():
     assert kwargs_to_list(kwargs) == []
 
 
+def test_kwargs_to_slurm():
+    kwargs = {
+        "partition": "test",
+        "dependency": ("afterany", [1, 2, 3]),
+        "kill_on_invalid_dep": True,
+        "hold": True,
+    }
+    expect = {
+        "--partition": "test",
+        "--dependency": "afterany:1:2:3",
+        "--kill-on-invalid-dep": "yes",
+        "--hold": "",
+    }
+    assert kwargs_to_slurm(kwargs) == expect
+
+
 def test_args_to_list():
     assert args_to_list(("--partition=shared",)) == ["--partition", "shared"]
     assert args_to_list(("--partition shared",)) == ["--partition", "shared"]
@@ -85,3 +105,83 @@ def test_sacct_format():
     assert handle_sacct_format(test_format) == ["--format"] + [",".join(test_format)]
     # brief overwrites format
     assert handle_sacct_format(test_format, {"brief": True}) == ["--brief"]
+
+
+def test_split():
+    shebang = "#!/usr/bin/env python          \n"
+    header = (
+        "#SBATCH --partition=compute    \n"
+        "#SBATCH --nodes 1              \n"
+        "#SBATCH--ntasks 12             \n"
+        "#SBATCH    --time    01:00:00  \n"
+        "#SBATCH --mem-per-cpu=1920     \n"
+        "                               \n"
+        "#comment                       \n"
+        "#SBATCH --account       1234   \n"
+        "       \n"
+        "          \n"
+    )
+    command = "echo Hello World\n"
+
+    h, c, s = split_script(shebang + header + command, strip=False)
+    assert h == header
+    assert c == command
+    assert s == shebang.strip()
+    h, c, s = split_script(shebang + header + command, strip=True)
+    assert c == command
+    assert s == shebang.strip()
+
+
+def test_parse_header():
+    header = (
+        "#!/usr/bin/env python          \n"
+        "#SBATCH --partition=compute  # this is the partition   \n"
+        "#SBATCH --nodes 1              \n"
+        "#SBATCH--ntasks 12             \n"
+        "#SBATCH    --time    01:00:00  \n"
+        "#SBATCH --mem-per-cpu=1920     \n"
+        "                               \n"
+        "#comment                       \n"
+        "#SBATCH --account       1234   \n"
+        "       \n"
+        "          \n"
+    )
+
+    expect = {
+        "partition": "compute",
+        "nodes": "1",
+        "ntasks": "12",
+        "time": "01:00:00",
+        "mem-per-cpu": "1920",
+        "account": "1234",
+    }
+    args = parse_header(header, eval_types=False)
+    assert args == expect
+
+    expect = {
+        "partition": "compute",
+        "nodes": 1,
+        "ntasks": 12,
+        "time": "01:00:00",
+        "mem-per-cpu": 1920,
+        "account": 1234,
+    }
+    args = parse_header(header, eval_types=True)
+    assert args == expect
+
+
+def test_create_header():
+    kwargs = {
+        "partition": "test",
+        "dependency": ("afterany", [1, 2, 3]),
+        "kill_on_invalid_dep": True,
+        "hold": True,
+    }
+    expect = (
+        "#SBATCH --partition=test\n"
+        "#SBATCH --dependency=afterany:1:2:3\n"
+        "#SBATCH --kill-on-invalid-dep=yes\n"
+        "#SBATCH --hold\n"
+    )
+    header = create_header(kwargs_to_slurm(kwargs))
+    assert header == expect

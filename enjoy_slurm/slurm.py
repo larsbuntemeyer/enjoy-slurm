@@ -4,13 +4,15 @@ from os import path as op
 import copy
 from warnings import warn
 
-from .utils import (
+from .utils import execute, create_scontrol_func
+
+from .parser import (
+    parse_sacct,
     kwargs_to_list,
     args_to_list,
-    parse_sacct,
-    execute,
-    create_scontrol_func,
     handle_sacct_format,
+    split_script,
+    parse_header,
 )
 
 from .config import fields
@@ -199,21 +201,22 @@ class Job:
 
         if op.isfile(self.job):
             self.jobscript = op.abspath(self.job)
+            self._init_from_file()
         else:
             self.jobscript = None
             self.wrap = self.job
 
-        self.interpreter = interpreter
-        if interpreter is None and self.wrap:
-            self.interpreter = "#!/bin/sh"
-        if interpreter == "python":
-            self.interpreter = "#!/usr/bin/env python"
-
-        if self.interpreter is not None:
-            self.wrap = self.interpreter + "\n" + self.wrap
-
         if self.jobid and not self.jobinfo():
             warn(f"jobid {self.jobid} seems to be invalid")
+
+    def _init_from_file(self):
+        with open(self.jobscript) as f:
+            self.job = f.read()
+        first_line = self.job.splitlines()[0]
+        if first_line.startswith("#!"):
+            self.interpreter = first_line[2:].strip()
+        self.header, self.command, self.shebang = split_script(self.job, strip=True)
+        self.kwargs = parse_header(self.header, eval_types=True)
 
     def __eq__(self, other):
         return self.jobid == other.jobid
@@ -222,10 +225,13 @@ class Job:
         return self.jobinfo(format=key)
 
     def __repr__(self):
+        indent = 2 * " "
         # txt = f"job         : {self.job}\n"
         txt = f"jobscript   : {self.jobscript}\n"
-        txt += f"jobid       : {self.jobid}\n"
-        txt += f"defaults    : {self.kwargs}\n"
+        txt += f"jobid       : {self.jobid}\n\n"
+        txt += f"Slurm\n"
+        for k, v in self.kwargs.items():
+            txt += indent + f"{k} : {v}\n"
         return txt
 
     @property
