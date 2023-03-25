@@ -3,20 +3,21 @@ import pytest
 from enjoy_slurm.parser import (
     split_script,
     parse_header,
-    parse_dependency,
+    _parse_dependency,
     kwargs_to_list,
     handle_sacct_format,
     args_to_list,
     kwargs_to_slurm,
+    create_header,
 )
 from enjoy_slurm.config import default_sacct_format
 
 
 def test_parse_dependency():
-    assert parse_dependency([1, 2, 3]) == "afterok:1:2:3"
-    assert parse_dependency((None, [1, 2, 3])) == "afterok:1:2:3"
-    assert parse_dependency(("afterany", [1, 2, 3])) == "afterany:1:2:3"
-    assert parse_dependency("afterany:1:2:3") == "afterany:1:2:3"
+    assert _parse_dependency([1, 2, 3]) == "afterok:1:2:3"
+    assert _parse_dependency((None, [1, 2, 3])) == "afterok:1:2:3"
+    assert _parse_dependency(("afterany", [1, 2, 3])) == "afterany:1:2:3"
+    assert _parse_dependency("afterany:1:2:3") == "afterany:1:2:3"
 
 
 def test_kwargs_to_list():
@@ -167,3 +168,20 @@ def test_parse_header():
     }
     args = parse_header(header, eval_types=True)
     assert args == expect
+
+
+def test_create_header():
+    kwargs = {
+        "partition": "test",
+        "dependency": ("afterany", [1, 2, 3]),
+        "kill_on_invalid_dep": True,
+        "hold": True,
+    }
+    expect = (
+        "#SBATCH --partition=test\n"
+        "#SBATCH --dependency=afterany:1:2:3\n"
+        "#SBATCH --kill-on-invalid-dep=yes\n"
+        "#SBATCH --hold\n"
+    )
+    header = create_header(kwargs_to_slurm(kwargs))
+    assert header == expect

@@ -6,6 +6,29 @@ import re
 import pandas as pd
 
 
+def _parse_dependency(ids):
+    """parse dependency arguments to sbatch command line"""
+    how = None
+    if isinstance(ids, str):
+        return ids
+    if isinstance(ids, tuple):
+        how, ids = ids
+    if not how:
+        how = "afterok"
+    if not isinstance(ids, list):
+        ids = [ids]
+    return ":".join([how] + list(map(str, ids)))
+
+
+def _parse_slurm_arg(a, list_concat=","):
+    """parse slurm arguments to str or list of str with colons"""
+    if isinstance(a, (list, tuple)):
+        return [list_concat.join(map(str, a))]
+    if a is True:
+        return ""
+    return str(a)
+
+
 def handle_sacct_format(format=None, kwargs={}):
     if format == "brief" or "brief" in kwargs:
         return ["--brief"]  # + jobsteps * ["--format", "jobname"]
@@ -63,29 +86,6 @@ def parse_sacct(csv, jobsteps=None):
     return df
 
 
-def parse_dependency(ids):
-    """parse dependency arguments to sbatch command line"""
-    how = None
-    if isinstance(ids, str):
-        return ids
-    if isinstance(ids, tuple):
-        how, ids = ids
-    if not how:
-        how = "afterok"
-    if not isinstance(ids, list):
-        ids = [ids]
-    return ":".join([how] + list(map(str, ids)))
-
-
-def parse_slurm_arg(a, list_concat=","):
-    """parse slurm arguments to str or list of str with colons"""
-    if isinstance(a, (list, tuple)):
-        return [list_concat.join(map(str, a))]
-    if a is True:
-        return ""
-    return str(a)
-
-
 def parse_scontrol_show(output):
     """try to parse scontrol output"""
     try:
@@ -109,6 +109,17 @@ def parse_scontrol_show(output):
     return results
 
 
+def _parse_header_line(line):
+    """Parses a Slurm header line into a dict"""
+    if line.startswith("--"):
+        line = line[2:]
+    # split either by space or =
+    k, v = re.split(r"\s|=", line, 1)
+    # remove comments after SBATCH #
+    v = v.split("#", 1)[0]
+    return {k.strip(): v.strip()}
+
+
 def kwargs_to_slurm(d):
     """Parse arguments to command line arguments for sbatch
 
@@ -129,29 +140,18 @@ def kwargs_to_slurm(d):
             continue
         flag = "--" + k.replace("_", "-")
         if k == "dependency" and v is not None:
-            r[flag] = parse_dependency(v)
+            r[flag] = _parse_dependency(v)
             continue
         if k == "kill_on_invalid_dep" and not isinstance(v, str):
             if v is not None:
                 r[flag] = "no" if v is False else "yes"
             continue
         if v:
-            r[flag] = parse_slurm_arg(v, list_concat)
+            r[flag] = _parse_slurm_arg(v, list_concat)
             continue
         if v is False:
             continue
     return r
-
-
-def parse_header_kwarg(line):
-    """Parses a Slurm header line into a dict"""
-    if line.startswith("--"):
-        line = line[2:]
-    # split either by space or =
-    k, v = re.split(r"\s|=", line, 1)
-    # remove comments after SBATCH #
-    v = v.split("#", 1)[0]
-    return {k.strip(): v.strip()}
 
 
 def parse_header(header, eval_types=True):
@@ -179,7 +179,7 @@ def parse_header(header, eval_types=True):
     kwargs = {}
     for l in lines:
         if l.startswith("#SBATCH"):
-            kwargs.update(parse_header_kwarg(l.replace("#SBATCH", "").strip()))
+            kwargs.update(_parse_header_line(l.replace("#SBATCH", "").strip()))
     if eval_types is True:
         return _maybe_eval_types(kwargs)
     return kwargs
@@ -212,3 +212,14 @@ def split_script(script, strip=True):
         header += "" if not line.strip() and strip else line
 
     return header, "".join(lines[i:]), shebang
+
+
+def create_header(d):
+    """Creates a Slurm header from a dictionary of Slurm arguments"""
+    header = ""
+    c = "#SBATCH"
+    s = "="
+    for k, v in d.items():
+        header += f"{c} {k}"
+        header += f"{s}{v}\n" if v else "\n"
+    return header
