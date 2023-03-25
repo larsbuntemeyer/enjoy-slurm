@@ -110,7 +110,17 @@ def parse_scontrol_show(output):
 
 
 def kwargs_to_slurm(d):
-    """parse arguments to command line arguments for sbatch"""
+    """Parse arguments to command line arguments for sbatch
+
+    Parses a dictionary with keyword arguments from
+    enjoy_slurm.sbatch to command line arguments for sbatch.
+
+    Parameters
+    ----------
+    d : dict
+        Dictionary with keyword arguments.
+
+    """
     r = {}
     list_concat = ","
     for k, v in d.items():
@@ -134,7 +144,7 @@ def kwargs_to_slurm(d):
 
 
 def parse_header_kwarg(line):
-    """parses a Slurm header line into a dict"""
+    """Parses a Slurm header line into a dict"""
     if line.startswith("--"):
         line = line[2:]
     # split either by space or =
