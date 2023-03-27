@@ -11,7 +11,7 @@ def test_job():
         "#SBATCH --partition=test\n"
         "#SBATCH --account=ch0636\n"
         "\n"
-        'echo "Hello World from (hostname)"\n'
+        'echo "Hello World from $(hostname)"\n'
     )
     script = job(partition="test", account="ch0636")
     assert script == expect
