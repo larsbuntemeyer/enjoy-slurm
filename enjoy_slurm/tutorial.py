@@ -17,7 +17,7 @@ def job(shebang="#!/bin/bash", **kwargs):
 
     slurm_args = kwargs_to_slurm(config)
     header = create_header(slurm_args)
-    command = 'echo "Hello World from (hostname)"\n'
+    command = 'echo "Hello World from $(hostname)"\n'
 
     return shebang + "\n\n" + header + "\n" + command
 
