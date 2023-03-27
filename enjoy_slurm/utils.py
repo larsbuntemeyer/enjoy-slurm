@@ -5,6 +5,22 @@ import numpy as np
 from .parser import parse_scontrol_show
 
 
+interp_dict = {
+    "bash": ["/bin/sh", "bash"],
+    "python": ["python"],
+    "python3": ["python3"],
+    "python2": ["python2"],
+}
+
+
+def interp_from_shebang(first_line):
+    for k, v in interp_dict.items():
+        for i in v:
+            if i in first_line:
+                return k
+    return None
+
+
 def create_scontrol_func(name):
     def func(*args, **kwargs):
         command = ["scontrol", name] + list(args)  # + kwargs_to_list(kwargs)

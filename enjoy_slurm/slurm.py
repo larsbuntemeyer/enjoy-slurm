@@ -3,9 +3,9 @@ import os
 from os import path as op
 import copy
 from warnings import warn
-import pathlib
+from pathlib import Path
 
-from .utils import execute, create_scontrol_func
+from .utils import execute, create_scontrol_func, interp_from_shebang
 
 from .parser import (
     parse_sacct,
@@ -173,7 +173,7 @@ class scontrol(metaclass=SControl):
 
 
 class Job:
-    def __init__(self, job=None, jobid=None, interpreter=None, **kwargs):
+    def __init__(self, job=None, jobid=None, interpreter=None, verbose=False, **kwargs):
         """
         Slurm Job class.
 
@@ -182,7 +182,7 @@ class Job:
         Parameters
         ----------
         job : str
-            Path to jobscript or a command that should be wrapped.
+            Path to script, jobscript or a command that should be wrapped.
         jobid : int
             Jobid to create a Job instance from.
 
@@ -194,6 +194,8 @@ class Job:
 
         self.job = job
         self.jobid = jobid
+        self.interpreter = interpreter
+        self.verbose = verbose
         self.kwargs = kwargs
 
         if job is None:
@@ -201,7 +203,7 @@ class Job:
         self.wrap = None
 
         if op.isfile(self.job):
-            self.jobscript = op.abspath(self.job)
+            self.filename = op.abspath(self.job)
             self._init_from_file()
         else:
             self.jobscript = None
@@ -211,13 +213,19 @@ class Job:
             warn(f"jobid {self.jobid} seems to be invalid")
 
     def _init_from_file(self):
-        with open(self.jobscript) as f:
+        print(f"creating job from file: {self.filename}")
+        self.path = Path(self.filename)
+        with open(self.filename) as f:
             self.job = f.read()
         first_line = self.job.splitlines()[0]
-        if first_line.startswith("#!"):
-            self.interpreter = first_line[2:].strip()
+
         self.header, self.command, self.shebang = split_script(self.job, strip=True)
         self.kwargs = parse_header(self.header, eval_types=True)
+
+        if self.interpreter is None:
+            self.interpreter = interp_from_shebang(self.shebang)
+            if self.verbose:
+                print(f"found interpreter: {self.interpreter}")
 
     def __eq__(self, other):
         return self.jobid == other.jobid
@@ -228,7 +236,7 @@ class Job:
     def __repr__(self):
         indent = 2 * " "
         # txt = f"job         : {self.job}\n"
-        txt = f"jobscript   : {self.jobscript}\n"
+        txt = f"filename     : {self.filename}\n"
         txt += f"jobid       : {self.jobid}\n\n"
         txt += f"Slurm\n"
         for k, v in self.kwargs.items():
