@@ -3,6 +3,7 @@ import os
 from os import path as op
 import copy
 from warnings import warn
+import pathlib
 
 from .utils import execute, create_scontrol_func
 
