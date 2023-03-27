@@ -170,11 +170,12 @@ def parse_header(header, eval_types=True):
         A dictionary containing the slurm configuration.
 
     """
-    lines = header.splitlines()
-    header = None
+    if header:
+        lines = header.splitlines()
+    else:
+        return {}
     # ignore shebang
     if lines[0].startswith("#!"):
-        header = lines[0]
         lines = lines[1:]
     kwargs = {}
     for l in lines:

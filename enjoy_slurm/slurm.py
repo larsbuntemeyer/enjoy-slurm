@@ -5,7 +5,12 @@ import copy
 from warnings import warn
 from pathlib import Path
 
-from .utils import execute, create_scontrol_func, interp_from_shebang
+from .utils import (
+    execute,
+    create_scontrol_func,
+    interp_from_shebang,
+    shebang_from_interp,
+)
 
 from .parser import (
     parse_sacct,
@@ -173,7 +178,15 @@ class scontrol(metaclass=SControl):
 
 
 class Job:
-    def __init__(self, job=None, jobid=None, interpreter=None, verbose=False, **kwargs):
+    def __init__(
+        self,
+        job=None,
+        jobid=None,
+        interpreter=None,
+        shebang=None,
+        verbose=False,
+        **kwargs,
+    ):
         """
         Slurm Job class.
 
@@ -195,8 +208,10 @@ class Job:
         self.job = job
         self.jobid = jobid
         self.interpreter = interpreter
+        self.shebang = shebang
         self.verbose = verbose
         self.kwargs = kwargs
+        self.filename = None
 
         if job is None:
             self.job = ""
@@ -205,27 +220,40 @@ class Job:
         if op.isfile(self.job):
             self.filename = op.abspath(self.job)
             self._init_from_file()
-        else:
-            self.jobscript = None
-            self.wrap = self.job
+        elif job:
+            self.job = job
+            self.filename = None
+            self._init_from_job()
 
         if self.jobid and not self.jobinfo():
             warn(f"jobid {self.jobid} seems to be invalid")
 
+    @property
+    def script(self):
+        return self.shebang + "\n" + self.header + "\n" + self.command
+
     def _init_from_file(self):
-        print(f"creating job from file: {self.filename}")
+        """Init job from file"""
         self.path = Path(self.filename)
         with open(self.filename) as f:
             self.job = f.read()
+        self._init_from_job()
+
+    def _init_from_job(self):
+        """Init job from string"""
         first_line = self.job.splitlines()[0]
 
-        self.header, self.command, self.shebang = split_script(self.job, strip=True)
-        self.kwargs = parse_header(self.header, eval_types=True)
+        self.header, self.command, shebang = split_script(self.job, strip=True)
+        self.config = parse_header(self.header, eval_types=True)
+        self.config.update(self.kwargs)
 
-        if self.interpreter is None:
+        if not self.shebang and shebang:
+            self.shebang = shebang
+
+        if not self.interpreter and self.shebang:
             self.interpreter = interp_from_shebang(self.shebang)
-            if self.verbose:
-                print(f"found interpreter: {self.interpreter}")
+        elif self.interpreter and not self.shebang:
+            self.shebang = shebang_from_interp(self.interpreter)
 
     def __eq__(self, other):
         return self.jobid == other.jobid
