@@ -8,7 +8,7 @@ repos:
 #      args: [--config=pyproject.toml]
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v3.1.0
+  rev: v4.4.0
   hooks:
     - id: trailing-whitespace
       exclude: tests/data
@@ -22,14 +22,14 @@ repos:
       files: requirements-dev.txt
 
 - repo: https://github.com/pycqa/flake8
-  rev: 3.7.9
+  rev: 6.0.0
   hooks:
     - id: flake8
       exclude: docs/source/conf.py
       args: [--max-line-length=105, --ignore=E203,E501,W503, --select=select=C,E,F,W,B,B950]
 
 - repo: https://github.com/nbQA-dev/nbQA
-  rev: 1.6.3
+  rev: 1.7.0
   hooks:
     - id: nbqa-black
     - id: nbqa-pyupgrade
@@ -49,7 +49,7 @@ repos:
 #    - id: seed-isort-config
 
 - repo: https://github.com/psf/black
-  rev: stable
+  rev: 23.3.0
   hooks:
   - id: black
     language_version: python3
