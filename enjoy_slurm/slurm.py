@@ -299,6 +299,6 @@ class Job:
         return jobinfo(self.jobid, **kwargs)
 
     def run(self):
-        """Run the script."""
+        """Run the script without submitting it so Slurm."""
         command = [self.interpreter, self.filename]
         return execute(command)
