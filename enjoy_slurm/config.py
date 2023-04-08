@@ -17,9 +17,9 @@ default_sacct_format = [
 interp_dict = {
     "bourne": ["/bin/sh"],
     "bash": ["bash"],
-    "python": ["python"],
     "python3": ["python3"],
     "python2": ["python2"],
+    "python": ["python"],
 }
 
 # shebang
