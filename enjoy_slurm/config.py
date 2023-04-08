@@ -13,6 +13,22 @@ default_sacct_format = [
     "jobname",
 ]
 
+# interpreter dictionary
+interp_dict = {
+    "bourne": ["/bin/sh"],
+    "bash": ["bash"],
+    "python3": ["python3"],
+    "python2": ["python2"],
+    "python": ["python"],
+}
+
+# shebang
+shebang_format = "#!/usr/bin/env {exe}"
+
+shebang_dict = {
+    "bourne": "#!/bin/sh",
+    "bash": "#!/bin/bash",
+}
 
 fields = """
 Fields available:

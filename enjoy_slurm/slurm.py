@@ -3,9 +3,15 @@ import os
 from os import path as op
 import copy
 from warnings import warn
-import pathlib
+from pathlib import Path
 
-from .utils import execute, create_scontrol_func
+from .utils import (
+    execute,
+    create_scontrol_func,
+    interp_from_shebang,
+    shebang_from_interp,
+    execute,
+)
 
 from .parser import (
     parse_sacct,
@@ -191,33 +197,64 @@ class Job:
         Job instance either created from jobid or jobscript.
     """
 
-    def __init__(self, job=None, jobid=None, interpreter=None, **kwargs):
+    def __init__(
+        self,
+        job=None,
+        jobid=None,
+        interpreter=None,
+        shebang=None,
+        verbose=False,
+        **kwargs,
+    ):
         self.job = job
         self.jobid = jobid
+        self.interpreter = interpreter
+        self.shebang = shebang
+        self.verbose = verbose
         self.kwargs = kwargs
+        self.filename = None
 
         if job is None:
             self.job = ""
         self.wrap = None
 
         if op.isfile(self.job):
-            self.jobscript = op.abspath(self.job)
+            self.filename = op.abspath(self.job)
             self._init_from_file()
-        else:
-            self.jobscript = None
-            self.wrap = self.job
+        elif job:
+            self.job = job
+            self.filename = None
+            self._init_from_job()
 
         if self.jobid and not self.jobinfo():
             warn(f"jobid {self.jobid} seems to be invalid")
 
+    @property
+    def script(self):
+        return self.shebang + "\n" + self.header + "\n" + self.command
+
     def _init_from_file(self):
-        with open(self.jobscript) as f:
+        """Init job from file"""
+        self.path = Path(self.filename)
+        with open(self.filename) as f:
             self.job = f.read()
+        self._init_from_job()
+
+    def _init_from_job(self):
+        """Init job from string"""
         first_line = self.job.splitlines()[0]
-        if first_line.startswith("#!"):
-            self.interpreter = first_line[2:].strip()
-        self.header, self.command, self.shebang = split_script(self.job, strip=True)
-        self.kwargs = parse_header(self.header, eval_types=True)
+
+        self.header, self.command, shebang = split_script(self.job, strip=True)
+        self.config = parse_header(self.header, eval_types=True)
+        self.config.update(self.kwargs)
+
+        if not self.shebang and shebang:
+            self.shebang = shebang
+
+        if not self.interpreter and self.shebang:
+            self.interpreter = interp_from_shebang(self.shebang)
+        elif self.interpreter and not self.shebang:
+            self.shebang = shebang_from_interp(self.interpreter)
 
     def __eq__(self, other):
         return self.jobid == other.jobid
@@ -228,7 +265,7 @@ class Job:
     def __repr__(self):
         indent = 2 * " "
         # txt = f"job         : {self.job}\n"
-        txt = f"jobscript   : {self.jobscript}\n"
+        txt = f"filename     : {self.filename}\n"
         txt += f"jobid       : {self.jobid}\n\n"
         txt += f"Slurm\n"
         for k, v in self.kwargs.items():
@@ -260,3 +297,8 @@ class Job:
     def jobinfo(self, **kwargs):
         """Jobinfo as dictionary"""
         return jobinfo(self.jobid, **kwargs)
+
+    def run(self):
+        """Run the script without submitting it so Slurm."""
+        command = [self.interpreter, self.filename]
+        return execute(command)

@@ -3,6 +3,19 @@ from itertools import groupby
 import subprocess
 import numpy as np
 from .parser import parse_scontrol_show
+from .config import shebang_dict, interp_dict, shebang_format
+
+
+def interp_from_shebang(shebang):
+    for k, v in interp_dict.items():
+        for i in v:
+            if i in shebang:
+                return k
+    return None
+
+
+def shebang_from_interp(interp):
+    return shebang_dict.get(interp, shebang_format.format(exe=interp))
 
 
 def create_scontrol_func(name):
