@@ -21,7 +21,7 @@ root = pathlib.Path(__file__).parent.parent.absolute()
 os.environ["PYTHONPATH"] = str(root)
 sys.path.insert(0, str(root))
 
-import enjoy_slurm  # isort:skip
+# import enjoy_slurm  # isort:skip
 
 # -- Project information -----------------------------------------------------
 

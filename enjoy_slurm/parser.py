@@ -1,9 +1,9 @@
 import pandas as pd
+from itertools import groupby
 from io import StringIO
 from .config import delimiter, default_sacct_format, skip_args
 import numpy as np
 import re
-import pandas as pd
 
 
 def _parse_dependency(ids):
@@ -100,7 +100,7 @@ def parse_scontrol_show(output):
                 try:
                     split = a.split("=")
                     attrs[split[0]] = split[1]
-                except:
+                except Exception:
                     pass
             results[list(attrs.values())[0]] = attrs
             # results.append({a.split("=")[0]:a.split("=")[1] for a in attrs})
@@ -178,9 +178,9 @@ def parse_header(header, eval_types=True):
     if lines[0].startswith("#!"):
         lines = lines[1:]
     kwargs = {}
-    for l in lines:
-        if l.startswith("#SBATCH"):
-            kwargs.update(_parse_header_line(l.replace("#SBATCH", "").strip()))
+    for line in lines:
+        if line.startswith("#SBATCH"):
+            kwargs.update(_parse_header_line(line.replace("#SBATCH", "").strip()))
     if eval_types is True:
         return _maybe_eval_types(kwargs)
     return kwargs
