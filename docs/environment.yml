@@ -19,3 +19,4 @@ dependencies:
    - jupyter_client
    - sphinx-copybutton
    - sphinxcontrib-srclinks
+   - furo

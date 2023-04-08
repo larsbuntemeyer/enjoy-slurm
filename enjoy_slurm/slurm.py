@@ -172,25 +172,24 @@ class scontrol(metaclass=SControl):
 
 
 class Job:
+    """
+    Slurm Job class.
+
+    The Job class can manage meta data and submission of a Slurm job.
+
+    Parameters
+    ----------
+    job : str
+        Path to jobscript or a command that should be wrapped.
+    jobid : int
+        Jobid to create a Job instance from.
+
+    Returns
+    -------
+    job : Job
+        Job instance either created from jobid or jobscript.
+    """
     def __init__(self, job=None, jobid=None, interpreter=None, **kwargs):
-        """
-        Slurm Job class.
-
-        The Job class can manage meta data and submission of a Slurm job.
-
-        Parameters
-        ----------
-        job : str
-            Path to jobscript or a command that should be wrapped.
-        jobid : int
-            Jobid to create a Job instance from.
-
-        Returns
-        -------
-        job : Job
-            Job instance either created from jobid or jobscript.
-        """
-
         self.job = job
         self.jobid = jobid
         self.kwargs = kwargs
