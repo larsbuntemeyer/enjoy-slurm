@@ -197,7 +197,15 @@ class Job:
         Job instance either created from jobid or jobscript.
     """
 
-    def __init__(self, job=None, jobid=None, interpreter=None, **kwargs):
+    def __init__(
+        self,
+        job=None,
+        jobid=None,
+        interpreter=None,
+        shebang=None,
+        verbose=False,
+        **kwargs,
+    ):
         self.job = job
         self.jobid = jobid
         self.interpreter = interpreter
