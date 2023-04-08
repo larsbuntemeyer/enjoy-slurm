@@ -86,7 +86,7 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints", "Thumbs.db", ".DS_Store"]
 html_theme = "furo"
 html_title = "enjoy-slurmi"
 
-#html_theme_options = dict(
+# html_theme_options = dict(
 #    repository_url="https://github.com/larsbuntemeyer/enjoy-slurm",
 #    repository_branch="main",
 #    path_to_docs="docs",
@@ -96,7 +96,7 @@ html_title = "enjoy-slurmi"
 #    home_page_in_toc=False,
 #    extra_navbar="",
 #    navbar_footer_text="",
-#)
+# )
 
 css_vars = {
     "admonition-font-size": "0.9rem",
@@ -136,4 +136,4 @@ napoleon_use_param = True
 napoleon_use_rtype = True
 
 numpydoc_show_class_members = False
-#numpydoc_validation_checks = {"all"}
+# numpydoc_validation_checks = {"all"}

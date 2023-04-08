@@ -189,6 +189,7 @@ class Job:
     job : Job
         Job instance either created from jobid or jobscript.
     """
+
     def __init__(self, job=None, jobid=None, interpreter=None, **kwargs):
         self.job = job
         self.jobid = jobid
