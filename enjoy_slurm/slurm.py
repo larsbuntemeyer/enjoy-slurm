@@ -10,6 +10,7 @@ from .utils import (
     create_scontrol_func,
     interp_from_shebang,
     shebang_from_interp,
+    execute,
 )
 
 from .parser import (
@@ -296,3 +297,8 @@ class Job:
     def jobinfo(self, **kwargs):
         """Jobinfo as dictionary"""
         return jobinfo(self.jobid, **kwargs)
+
+    def run(self):
+        """Run the script."""
+        command = [self.interpreter, self.filename]
+        return execute(command)
