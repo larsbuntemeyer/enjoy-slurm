@@ -62,6 +62,11 @@ extensions = [
     "sphinxcontrib.srclinks",
 ]
 
+extlinks = {
+    "issue": ("https://github.com/larsbuntemeyer/enjoy-slurm/issues/%s", "GH#"),
+    "pr": ("https://github.com/larsbuntemeyer/enjoy-slurm/pull/%s", "GH#"),
+}
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
@@ -77,19 +82,34 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints", "Thumbs.db", ".DS_Store"]
 # a list of builtin themes.
 #
 # html_theme = "pangeo"
-html_theme = "sphinx_book_theme"
-html_title = "enjoy slurm!"
+# html_theme = "sphinx_book_theme"
+html_theme = "furo"
+html_title = "enjoy-slurmi"
 
+# html_theme_options = dict(
+#    repository_url="https://github.com/larsbuntemeyer/enjoy-slurm",
+#    repository_branch="main",
+#    path_to_docs="docs",
+#    use_edit_page_button=True,
+#    use_repository_button=True,
+#    use_issues_button=True,
+#    home_page_in_toc=False,
+#    extra_navbar="",
+#    navbar_footer_text="",
+# )
+
+css_vars = {
+    "admonition-font-size": "0.9rem",
+    "font-size--small": "92%",
+    "font-size--small--2": "87.5%",
+}
 html_theme_options = dict(
-    repository_url="https://github.com/larsbuntemeyer/enjoy-slurm",
-    repository_branch="main",
-    path_to_docs="docs",
-    use_edit_page_button=True,
-    use_repository_button=True,
-    use_issues_button=True,
-    home_page_in_toc=False,
-    extra_navbar="",
-    navbar_footer_text="",
+    source_repository="https://github.com/larsbuntemeyer/enjoy-slurm",
+    source_branch="main",
+    sidebar_hide_name=True,
+    source_directory="docs/",
+    light_css_variables=css_vars,
+    dark_css_variables=css_vars,
 )
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -101,3 +121,19 @@ html_static_path = ["_static"]
 # -- nbsphinx specific options ----------------------------------------------
 # this allows notebooks to be run even if they produce errors.
 nbsphinx_allow_errors = True
+
+
+autosummary_generate = True
+
+autodoc_typehints = "description"
+autodoc_typehints_description_target = "documented"
+autodoc_default_options = {
+    "members": True,
+    "undoc-members": True,
+    "private-members": True,
+}
+napoleon_use_param = True
+napoleon_use_rtype = True
+
+numpydoc_show_class_members = False
+# numpydoc_validation_checks = {"all"}
