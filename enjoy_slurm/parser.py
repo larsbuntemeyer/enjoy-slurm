@@ -1,9 +1,11 @@
-import pandas as pd
-from itertools import groupby
-from io import StringIO
-from .config import delimiter, default_sacct_format, skip_args
-import numpy as np
 import re
+from io import StringIO
+from itertools import groupby
+
+import numpy as np
+import pandas as pd
+
+from .config import default_sacct_format, delimiter, skip_args
 
 
 def _parse_dependency(ids):

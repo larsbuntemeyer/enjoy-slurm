@@ -1,7 +1,6 @@
-import pytest
-from enjoy_slurm import Job, sbatch, sacct, scontrol
-from . import hostname, requires_slurm, on_levante, requires_levante
+from enjoy_slurm import Job, sacct, sbatch, scontrol
 
+from . import hostname, on_levante, requires_slurm
 
 test_kwargs = {
     "levante": {"partitions": ["compute", "shared"]},
@@ -40,7 +39,7 @@ def test_partitions():
 @requires_slurm
 def test_sacct():
     jobid = sbatch(wrap="echo Hello World", **kwargs)
-    acct = sacct(jobid=jobid)
+    sacct(jobid=jobid)
     scon = scontrol.show(jobid=jobid)
     assert str(jobid) in scon
 

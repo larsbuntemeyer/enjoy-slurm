@@ -14,7 +14,6 @@ import os
 import pathlib
 import sys
 
-
 print("python exec:", sys.executable)
 print("sys.path:", sys.path)
 root = pathlib.Path(__file__).parent.parent.absolute()

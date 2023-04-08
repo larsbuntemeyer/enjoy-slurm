@@ -1,9 +1,7 @@
-import pandas as pd
-from itertools import groupby
 import subprocess
-import numpy as np
+
+from .config import interp_dict, shebang_dict, shebang_format
 from .parser import parse_scontrol_show
-from .config import shebang_dict, interp_dict, shebang_format
 
 
 def interp_from_shebang(shebang):

@@ -1,16 +1,14 @@
-import pytest
-
-from enjoy_slurm.parser import (
-    split_script,
-    parse_header,
-    _parse_dependency,
-    kwargs_to_list,
-    handle_sacct_format,
-    args_to_list,
-    kwargs_to_slurm,
-    create_header,
-)
 from enjoy_slurm.config import default_sacct_format
+from enjoy_slurm.parser import (
+    _parse_dependency,
+    args_to_list,
+    create_header,
+    handle_sacct_format,
+    kwargs_to_list,
+    kwargs_to_slurm,
+    parse_header,
+    split_script,
+)
 
 
 def test_parse_dependency():

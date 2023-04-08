@@ -1,28 +1,22 @@
-import subprocess
-import os
-from os import path as op
 import copy
-from warnings import warn
+from os import path as op
 from pathlib import Path
-
-from .utils import (
-    execute,
-    create_scontrol_func,
-    interp_from_shebang,
-    shebang_from_interp,
-    execute,
-)
+from warnings import warn
 
 from .parser import (
-    parse_sacct,
-    kwargs_to_list,
     args_to_list,
     handle_sacct_format,
-    split_script,
+    kwargs_to_list,
     parse_header,
+    parse_sacct,
+    split_script,
 )
-
-from .config import fields
+from .utils import (
+    create_scontrol_func,
+    execute,
+    interp_from_shebang,
+    shebang_from_interp,
+)
 
 
 def sbatch(
@@ -242,7 +236,6 @@ class Job:
 
     def _init_from_job(self):
         """Init job from string"""
-        first_line = self.job.splitlines()[0]
 
         self.header, self.command, shebang = split_script(self.job, strip=True)
         self.config = parse_header(self.header, eval_types=True)
@@ -267,7 +260,7 @@ class Job:
         # txt = f"job         : {self.job}\n"
         txt = f"filename     : {self.filename}\n"
         txt += f"jobid       : {self.jobid}\n\n"
-        txt += f"Slurm\n"
+        txt += "Slurm\n"
         for k, v in self.kwargs.items():
             txt += indent + f"{k} : {v}\n"
         return txt

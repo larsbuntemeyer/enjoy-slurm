@@ -1,5 +1,5 @@
-from enjoy_slurm.utils import interp_from_shebang
 from enjoy_slurm.config import shebang_dict
+from enjoy_slurm.utils import interp_from_shebang
 
 
 def test_shebang():
