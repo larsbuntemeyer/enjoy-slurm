@@ -1,5 +1,5 @@
-from enjoy_slurm.tutorial import test_script
 from enjoy_slurm import Job
+from enjoy_slurm.tutorial import test_script
 
 
 def test_job():

@@ -1,7 +1,7 @@
-from .parser import create_header, kwargs_to_slurm
-
 import tempfile
 from os import path as op
+
+from .parser import create_header, kwargs_to_slurm
 
 
 def job(shebang="#!/bin/bash", **kwargs):
