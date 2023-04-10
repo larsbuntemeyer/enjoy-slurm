@@ -129,7 +129,7 @@ autodoc_typehints_description_target = "documented"
 autodoc_default_options = {
     "members": True,
     "undoc-members": True,
-    "private-members": True,
+    "private-members": False,
 }
 napoleon_use_param = True
 napoleon_use_rtype = True
