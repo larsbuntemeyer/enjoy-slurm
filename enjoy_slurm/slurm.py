@@ -261,7 +261,7 @@ class Job:
         txt = f"filename     : {self.filename}\n"
         txt += f"jobid       : {self.jobid}\n\n"
         txt += "Slurm\n"
-        for k, v in self.kwargs.items():
+        for k, v in self.config.items():
             txt += indent + f"{k} : {v}\n"
         return txt
 
@@ -272,9 +272,9 @@ class Job:
 
     def sbatch(self, **kwargs):
         """Submit job to Slurm"""
-        config = self.kwargs.copy()
+        config = self.config.copy()
         config.update(kwargs)
-        jobid = sbatch(self.jobscript, wrap=self.wrap, **config)
+        jobid = sbatch(self.filename, wrap=self.wrap, **config)
         self.scontrol = scontrol.show(jobid=jobid)
         if self.jobid is None:
             self.jobid = jobid
