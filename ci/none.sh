@@ -10,8 +10,6 @@ function jobqueue_install {
 }
 
 function jobqueue_script {
-  flake8 -j auto enjoy_slurm
-  black --exclude versioneer.py --check .
   pytest --verbose
 }
 
