@@ -16,3 +16,11 @@ Top-level functions
    sacct
    scontrol.show
    jobinfo
+
+Job
+===
+
+.. autosummary::
+   :toctree: generated/
+
+   Job
