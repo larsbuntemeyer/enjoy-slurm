@@ -32,7 +32,7 @@ function jobqueue_install {
 }
 
 function jobqueue_script {
-    docker exec slurmctld /bin/bash -c "cd; pytest /enjoy-slurm --verbose -s"
+    docker exec slurmctld /bin/bash -c "cd; pytest tests --verbose -s"
 }
 
 function jobqueue_after_script {
