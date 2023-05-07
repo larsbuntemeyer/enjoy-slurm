@@ -39,4 +39,5 @@ function jobqueue_after_script {
     docker exec slurmctld bash -c 'sinfo'
     docker exec slurmctld bash -c 'squeue'
     docker exec slurmctld bash -c 'sacct -l'
+    docker exec slurmctld bash -c 'scontrol show partition'
 }
