@@ -9,7 +9,7 @@ What's New
     import enjoy_slurm
 
 
-v0.1.0 (UNRELEASED)
+v0.1.0 (23.05.2023)
 -------------------
 
 Initial release.
