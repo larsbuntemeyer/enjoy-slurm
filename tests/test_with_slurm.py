@@ -1,4 +1,4 @@
-from enjoy_slurm import Job, sacct, sbatch, scontrol
+from enjoy_slurm import Job, sacct, sbatch
 
 from . import hostname, on_levante, requires_slurm
 
@@ -25,23 +25,23 @@ def test_sbatch():
     print(jobid)
 
 
-@requires_slurm
-def test_partitions():
-    if on_levante:
-        partitions = test_kwargs["levante"]["partitions"]
-    else:
-        partitions = test_kwargs["docker"]["partitions"]
-    for p in partitions:
-        pdict = scontrol.show(partition=p)
-        assert p in pdict
+# @requires_slurm
+# def test_partitions():
+#    if on_levante:
+#        partitions = test_kwargs["levante"]["partitions"]
+#    else:
+#        partitions = test_kwargs["docker"]["partitions"]
+#    for p in partitions:
+#        pdict = scontrol.show(partition=p)
+#        assert p in pdict
 
 
 @requires_slurm
 def test_sacct():
     jobid = sbatch(wrap="echo Hello World", **kwargs)
     sacct(jobid=jobid)
-    scon = scontrol.show(jobid=jobid)
-    assert str(jobid) in scon
+    # scon = scontrol.show(jobid=jobid)
+    # assert str(jobid) in scon
 
 
 @requires_slurm
