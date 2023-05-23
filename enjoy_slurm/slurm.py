@@ -11,8 +11,7 @@ from .parser import (
     parse_sacct,
     split_script,
 )
-from .utils import (
-    create_scontrol_func,
+from .utils import (  # create_scontrol_func,
     execute,
     interp_from_shebang,
     shebang_from_interp,
@@ -149,27 +148,27 @@ def jobinfo(jobid=None, format=None, steps="minimal", **kwargs):
     return acct.set_index("JobID").to_dict(orient="index")
 
 
-class SControl(type):
-    def __getattr__(cls, key):
-        return create_scontrol_func(key)
+# class SControl(type):
+#     def __getattr__(cls, key):
+#         return create_scontrol_func(key)
 
 
-class scontrol(metaclass=SControl):
-    """
-    View or modify Slurm configuration and state
-    """
+# class scontrol(metaclass=SControl):
+#     """
+#     View or modify Slurm configuration and state
+#     """
 
-    def show(*args, **kwargs):
-        """
-        Display state of identified entity, default is all records.
+#     def show(*args, **kwargs):
+#         """
+#         Display state of identified entity, default is all records.
 
-        Entity may be "aliases", "assoc_mgr", "bbstat", "burstBuffer",
-        "config", "daemons", "dwstat", "federation", "frontend",
-        "hostlist", "hostlistsorted", "hostnames", "job", "node",
-        "partition", "reservation", "slurmd", "step", or "topology".
+#         Entity may be "aliases", "assoc_mgr", "bbstat", "burstBuffer",
+#         "config", "daemons", "dwstat", "federation", "frontend",
+#         "hostlist", "hostlistsorted", "hostnames", "job", "node",
+#         "partition", "reservation", "slurmd", "step", or "topology".
 
-        """
-        return create_scontrol_func("show")(*args, **kwargs)
+#         """
+#         return create_scontrol_func("show")(*args, **kwargs)
 
 
 class Job:
@@ -206,6 +205,7 @@ class Job:
         self.shebang = shebang
         self.verbose = verbose
         self.kwargs = kwargs
+        self.config = {}
         self.filename = None
 
         if job is None:
@@ -258,7 +258,7 @@ class Job:
     def __repr__(self):
         indent = 2 * " "
         # txt = f"job         : {self.job}\n"
-        txt = f"filename     : {self.filename}\n"
+        txt = f"filename    : {self.filename}\n"
         txt += f"jobid       : {self.jobid}\n\n"
         txt += "Slurm\n"
         for k, v in self.config.items():
@@ -275,7 +275,7 @@ class Job:
         config = self.config.copy()
         config.update(kwargs)
         jobid = sbatch(self.filename, wrap=self.wrap, **config)
-        self.scontrol = scontrol.show(jobid=jobid)
+        # self.scontrol = scontrol.show(jobid=jobid)
         if self.jobid is None:
             self.jobid = jobid
             return self
