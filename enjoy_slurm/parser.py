@@ -141,7 +141,7 @@ def kwargs_to_slurm(d):
         if k in skip_args:
             continue
         flag = "--" + k.replace("_", "-")
-        if k == "dependency" and v is not None:
+        if k == "dependency" and v:
             r[flag] = _parse_dependency(v)
             continue
         if k == "kill_on_invalid_dep" and not isinstance(v, str):
