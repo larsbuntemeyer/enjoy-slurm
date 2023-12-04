@@ -24,7 +24,7 @@ jobs:
 
       - name: Setup Empty Conda Environment with Mamba
         if: matrix.jobqueue == 'none'
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           channels: conda-forge
           mamba-version: "*"
