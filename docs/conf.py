@@ -13,6 +13,7 @@
 import os
 import pathlib
 import sys
+from pkg_resources import get_distribution
 
 print("python exec:", sys.executable)
 print("sys.path:", sys.path)
@@ -32,7 +33,6 @@ author = "Lars Buntemeyer"
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 # see https://pypi.org/project/setuptools-scm/ for details
-from pkg_resources import get_distribution
 
 release = get_distribution("enjoy_slurm").version
 # for example take major/minor
