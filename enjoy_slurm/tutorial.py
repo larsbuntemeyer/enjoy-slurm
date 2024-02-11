@@ -4,8 +4,13 @@ from os import path as op
 from .parser import create_header, kwargs_to_slurm
 
 
-def job(shebang="#!/bin/bash", **kwargs):
+def job(shebang=None, command=None, **kwargs):
     """Creates a tutorial job"""
+
+    if shebang is None:
+        shebang = "#!/bin/bash"
+    if command is None:
+        command = 'echo "Hello World from $(hostname)"\n'
 
     config = {
         "job_name": "tutorial",
@@ -17,7 +22,6 @@ def job(shebang="#!/bin/bash", **kwargs):
 
     slurm_args = kwargs_to_slurm(config)
     header = create_header(slurm_args)
-    command = 'echo "Hello World from $(hostname)"\n'
 
     return shebang + "\n\n" + header + "\n" + command
 
