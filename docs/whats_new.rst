@@ -8,6 +8,10 @@ What's New
 
     import enjoy_slurm
 
+v0.1.2 (14.02.2023)
+-------------------
+
+Docs and API maintenance.
 
 v0.1.1 (25.08.2023)
 -------------------
