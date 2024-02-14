@@ -51,6 +51,8 @@ def sbatch(
         it or not. A terminated job state will be ``JOB_CANCELLED``. If this option is not specified,
         the system wide behavior applies. By default the job stays pending with reason ``DependencyNeverSatisfied``
         or if the kill_invalid_depend is specified in slurm.conf the job is terminated.
+    verbose : bool
+        Print sbatch command.
 
     Returns
     -------
@@ -84,7 +86,7 @@ def sbatch(
     return jobid
 
 
-def sacct(jobid=None, format=None, steps=None, **kwargs):
+def sacct(jobid=None, format=None, steps=None, verbose=False, **kwargs):
     """
     Accounting data for all jobs and job steps in the Slurm job accounting log or Slurm database
 
@@ -97,6 +99,8 @@ def sacct(jobid=None, format=None, steps=None, **kwargs):
     steps : str
         Jobsteps that should be shown. If ``None``, all jobsteps are returned.
         Use ``mininmal`` to return only the main inclusive step.
+    verbose : bool
+        Print sacct command.
 
     Returns
     -------
@@ -114,7 +118,7 @@ def sacct(jobid=None, format=None, steps=None, **kwargs):
     if jobid is not None:
         command += ["-j", str(jobid)]
 
-    output = execute(command)
+    output = execute(command, verbose=verbose)
 
     return parse_sacct(output, steps)
 
@@ -285,11 +289,15 @@ class Job:
 
     def sacct(self, **kwargs):
         """Get accounting for this job"""
-        return sacct(jobid=self.jobid, **kwargs)
+        if self.jobid:
+            return sacct(jobid=self.jobid, **kwargs)
+        return None
 
     def jobinfo(self, **kwargs):
         """Jobinfo as dictionary"""
-        return jobinfo(self.jobid, **kwargs)
+        if self.jobid:
+            return jobinfo(self.jobid, **kwargs)
+        return None
 
     def run(self):
         """Run the script without submitting it so Slurm."""

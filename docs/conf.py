@@ -13,6 +13,7 @@
 import os
 import pathlib
 import sys
+from pkg_resources import get_distribution
 
 print("python exec:", sys.executable)
 print("sys.path:", sys.path)
@@ -32,7 +33,6 @@ author = "Lars Buntemeyer"
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 # see https://pypi.org/project/setuptools-scm/ for details
-from pkg_resources import get_distribution
 
 release = get_distribution("enjoy_slurm").version
 # for example take major/minor
@@ -48,7 +48,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "nbsphinx",
-    "recommonmark",
+    #   "recommonmark",
     "sphinx.ext.mathjax",
     "sphinx.ext.autosummary",
     "sphinx.ext.extlinks",
@@ -62,8 +62,8 @@ extensions = [
 ]
 
 extlinks = {
-    "issue": ("https://github.com/larsbuntemeyer/enjoy-slurm/issues/%s", "GH#"),
-    "pr": ("https://github.com/larsbuntemeyer/enjoy-slurm/pull/%s", "GH#"),
+    "issue": ("https://github.com/larsbuntemeyer/enjoy-slurm/issues/%s", "#%s"),
+    "pr": ("https://github.com/larsbuntemeyer/enjoy-slurm/pull/%s", "#%s"),
 }
 
 # Add any paths that contain templates here, relative to this directory.
@@ -83,7 +83,7 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints", "Thumbs.db", ".DS_Store"]
 # html_theme = "pangeo"
 # html_theme = "sphinx_book_theme"
 html_theme = "furo"
-html_title = "enjoy-slurmi"
+html_title = "enjoy-slurm"
 
 # html_theme_options = dict(
 #    repository_url="https://github.com/larsbuntemeyer/enjoy-slurm",
@@ -105,7 +105,7 @@ css_vars = {
 html_theme_options = dict(
     source_repository="https://github.com/larsbuntemeyer/enjoy-slurm",
     source_branch="main",
-    sidebar_hide_name=True,
+    sidebar_hide_name=False,
     source_directory="docs/",
     light_css_variables=css_vars,
     dark_css_variables=css_vars,
@@ -114,7 +114,8 @@ html_theme_options = dict(
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
+html_static_path = []
 
 
 # -- nbsphinx specific options ----------------------------------------------

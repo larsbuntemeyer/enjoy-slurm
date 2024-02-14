@@ -11,8 +11,6 @@ Welcome to enjoy-slurm's documentation!
    api
    whats_new
 
-
-
 Indices and tables
 ==================
 

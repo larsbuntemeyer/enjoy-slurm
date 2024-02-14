@@ -17,7 +17,7 @@ Bugfix release.
 Bugfixes
 ~~~~~~~~
 
-- Allow empty list as dependency in :py:meth:`sbatch` (:pull:`26`).
+- Allow empty list as dependency in :py:meth:`sbatch` (:pr:`26`).
 
 v0.1.0 (23.05.2023)
 -------------------
