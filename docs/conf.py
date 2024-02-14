@@ -48,7 +48,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "nbsphinx",
- #   "recommonmark",
+    #   "recommonmark",
     "sphinx.ext.mathjax",
     "sphinx.ext.autosummary",
     "sphinx.ext.extlinks",
@@ -83,7 +83,7 @@ exclude_patterns = ["_build", "**.ipynb_checkpoints", "Thumbs.db", ".DS_Store"]
 # html_theme = "pangeo"
 # html_theme = "sphinx_book_theme"
 html_theme = "furo"
-html_title = "enjoy-slurmi"
+html_title = "enjoy-slurm"
 
 # html_theme_options = dict(
 #    repository_url="https://github.com/larsbuntemeyer/enjoy-slurm",
