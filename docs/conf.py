@@ -62,8 +62,8 @@ extensions = [
 ]
 
 extlinks = {
-    "issue": ("https://github.com/larsbuntemeyer/enjoy-slurm/issues/%s", "GH#"),
-    "pr": ("https://github.com/larsbuntemeyer/enjoy-slurm/pull/%s", "GH#"),
+    "issue": ("https://github.com/larsbuntemeyer/enjoy-slurm/issues/%s", "#%s"),
+    "pr": ("https://github.com/larsbuntemeyer/enjoy-slurm/pull/%s", "#%s"),
 }
 
 # Add any paths that contain templates here, relative to this directory.
@@ -105,7 +105,7 @@ css_vars = {
 html_theme_options = dict(
     source_repository="https://github.com/larsbuntemeyer/enjoy-slurm",
     source_branch="main",
-    sidebar_hide_name=True,
+    sidebar_hide_name=False,
     source_directory="docs/",
     light_css_variables=css_vars,
     dark_css_variables=css_vars,
@@ -114,7 +114,8 @@ html_theme_options = dict(
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
+html_static_path = []
 
 
 # -- nbsphinx specific options ----------------------------------------------
