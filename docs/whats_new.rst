@@ -8,6 +8,14 @@ What's New
 
     import enjoy_slurm
 
+v0.1.3 (08.03.2024)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- Fix parsing of lists as arguments (:pr:`46`).
+
 v0.1.2 (14.02.2023)
 -------------------
 
