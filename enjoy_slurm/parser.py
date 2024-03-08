@@ -25,7 +25,7 @@ def _parse_dependency(ids):
 def _parse_slurm_arg(a, list_concat=","):
     """parse slurm arguments to str or list of str with colons"""
     if isinstance(a, (list, tuple)):
-        return [list_concat.join(map(str, a))]
+        return list_concat.join(map(str, a))
     if a is True:
         return ""
     return str(a)
@@ -141,6 +141,7 @@ def kwargs_to_slurm(d):
         if k in skip_args:
             continue
         flag = "--" + k.replace("_", "-")
+        # special handling of dependencies
         if k == "dependency" and v:
             r[flag] = _parse_dependency(v)
             continue
