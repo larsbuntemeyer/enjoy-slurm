@@ -11,6 +11,8 @@ What's New
 v0.1.3 (08.03.2024)
 -------------------
 
+Bugfix release.
+
 Bugfixes
 ~~~~~~~~
 
