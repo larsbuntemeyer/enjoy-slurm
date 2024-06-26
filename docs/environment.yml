@@ -13,8 +13,6 @@ dependencies:
   - ipykernel
   - pandoc
   - pip
-  - sphinx-book-theme
-  - nbsphinx-link
   - nbsphinx
   - jupyter_client
   - sphinx-copybutton
