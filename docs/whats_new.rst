@@ -8,6 +8,14 @@ What's New
 
     import enjoy_slurm
 
+v0.1.4 (Unreleased)
+-------------------
+
+Bugfixes
+~~~~~~~~
+
+- Fix ci and docs (:pr:`51`).
+
 v0.1.3 (08.03.2024)
 -------------------
 

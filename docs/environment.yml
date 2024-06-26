@@ -3,21 +3,18 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-   - python=3.10
-   - pandas
-   - numpydoc
-   - sphinx
-   - ipython
-   - nbconvert
-   - nbformat
-   - ipykernel
-   - ipython_genutils
-   - pandoc
-   - pip
-   - sphinx-book-theme
-   - nbsphinx-link
-   - nbsphinx
-   - jupyter_client
-   - sphinx-copybutton
-   - sphinxcontrib-srclinks
-   - furo
+  - python=3.10
+  - pandas
+  - numpydoc
+  - sphinx
+  - ipython
+  - nbconvert
+  - nbformat
+  - ipykernel
+  - pandoc
+  - pip
+  - nbsphinx
+  - jupyter_client
+  - sphinx-copybutton
+  - sphinxcontrib-srclinks
+  - furo

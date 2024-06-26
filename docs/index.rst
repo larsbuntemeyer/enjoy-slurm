@@ -7,7 +7,7 @@ Welcome to enjoy-slurm's documentation!
 .. toctree::
    :maxdepth: 2
 
-   tutorial
+   notebooks/tutorial
    api
    whats_new
 
