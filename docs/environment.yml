@@ -11,7 +11,6 @@ dependencies:
   - nbconvert
   - nbformat
   - ipykernel
-  - ipython_genutils
   - pandoc
   - pip
   - sphinx-book-theme
