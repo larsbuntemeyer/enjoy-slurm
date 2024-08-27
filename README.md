@@ -1,6 +1,6 @@
 enjoy-slurm
 ==============================
-[![Build Status](https://github.com/larsbuntemeyer/enjoy-slurm/workflows/Tests/badge.svg)](https://github.com/larsbuntemeyer/enjoy-slurm/actions)
+[![CI](https://github.com/larsbuntemeyer/enjoy-slurm/actions/workflows/ci.yaml/badge.svg)](https://github.com/larsbuntemeyer/enjoy-slurm/actions/workflows/ci.yaml)
 [![codecov](https://codecov.io/gh/larsbuntemeyer/enjoy-slurm/branch/main/graph/badge.svg)](https://codecov.io/gh/larsbuntemeyer/enjoy-slurm)
 [![License:MIT](https://img.shields.io/badge/License-MIT-lightgray.svg?style=flt-square)](https://opensource.org/licenses/MIT)
 [![pypi](https://img.shields.io/pypi/v/enjoy-slurm.svg)](https://pypi.org/project/enjoy-slurm)
