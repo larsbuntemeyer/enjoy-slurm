@@ -14,6 +14,7 @@ v0.1.4 (Unreleased)
 Bugfixes
 ~~~~~~~~
 
+- Update dependencies API (:pr:`63`).
 - Fix ci and docs (:pr:`51`, :pr:`62`).
 
 v0.1.3 (08.03.2024)
