@@ -20,15 +20,15 @@ jobs:
         with:
             access_token: ${{ github.token }}
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Setup Empty Conda Environment with Mamba
         if: matrix.jobqueue == 'none'
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v2
         with:
           channels: conda-forge
           mamba-version: "*"
-          activate-environment: enjoy-slurm-test
+          activate-environment: enjoy-slurm
           auto-activate-base: false
 
       - name: Setup dask-jobqueue conda environment
@@ -40,6 +40,7 @@ jobs:
       - name: Setup Job queuing system
         if: matrix.jobqueue != 'none'
         run: |
+          cp ci/environment.yml ci/${{ matrix.jobqueue }}/environment.yml
           source ci/${{ matrix.jobqueue }}.sh
           jobqueue_before_install
 
