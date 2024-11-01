@@ -23,7 +23,6 @@ def sbatch(
     dependency_type=None,
     kill_on_invalid_dep=None,
     verbose=False,
-    # *args,
     **kwargs,
 ):
     """
@@ -81,12 +80,7 @@ def sbatch(
         }
     )
 
-    command = (
-        ["sbatch", "--parsable"]
-        # + args_to_list(args)
-        + kwargs_to_list(kwargs)
-        + jobscript
-    )
+    command = ["sbatch", "--parsable"] + kwargs_to_list(kwargs) + jobscript
 
     jobid = int(execute(command, verbose=verbose))
 
