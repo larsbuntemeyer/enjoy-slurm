@@ -13,7 +13,7 @@ Slurm jobs on an HPC computer. This package is a successor of the retired [HPC s
 
 ## Features
 
-* Use `sbatch`, `sacct`, `scontrol` etc. directly from python with a pythonic API.
+* Use `sbatch` and `sacct` directly from python with a pythonic API.
 * Parse command outputs into python objects like pandas DataFrames or dictionaries.
 
 ## Examples
