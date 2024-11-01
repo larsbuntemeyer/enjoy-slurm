@@ -1,0 +1,61 @@
+name: test with slurm
+on: [push, pull_request]
+jobs:
+  Build:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version:
+          - "3.9"
+          - "3.10"
+          - "3.11"
+      fail-fast: false
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Dependencies
+        run: |
+          which python
+          which python${{ matrix.python-version }}
+          pip install pytest pytest-cov pytest-env pandas
+      - name: Start Slurm Container
+        uses: sudo-bot/action-docker-compose@latest
+        with:
+          cli-args: "-f docker-compose.yml up -d"
+        env:
+          PYTHON: ${{ matrix.python-version }}
+      - name: Debug
+        run: |
+          docker ps -a
+          docker version
+          pwd
+          ls -al
+          docker inspect slurmctl
+          env | sort
+      - name: Configure slurm
+        run: |
+          docker exec slurmctl ./scripts/configure.sh
+        env:
+          PYTHON: ${{ matrix.python-version }}
+      - name: Install enjoy-slurm
+        run: |
+          docker exec slurmctl python -m pip install pytest pytest-env pytest-cov
+          docker exec slurmctl python -m pip install -e .
+      - name: Run tests
+        timeout-minutes: 5
+        run: docker exec slurmctl python -u -m pytest
+          --cov=enjoy_slurm
+          --cov-report=xml
+          --junitxml=test-results/${{ runner.os }}-${{ matrix.python-version }}.xml
+      - name: Upload code coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          env_vars: RUNNER_OS,PYTHON_VERSION
+          name: codecov-umbrella
+          fail_ci_if_error: false
