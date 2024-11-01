@@ -2,11 +2,11 @@
 
 function jobqueue_before_install {
     docker version
-    docker-compose version
+    docker compose version
 
     # start slurm cluster
     cd ./ci/slurm
-    docker-compose pull
+    docker compose build
     ./start-slurm.sh
     cd -
 
@@ -22,17 +22,19 @@ function show_network_interfaces {
     for c in slurmctld c1 c2; do
         echo '------------------------------------------------------------'
         echo docker container: $c
-        docker exec $c conda run -n dask-jobqueue python -c 'import psutil; print(psutil.net_if_addrs().keys())'
+        docker exec $c conda run -n enjoy-slurm python -c 'import psutil; print(psutil.net_if_addrs().keys())'
         echo '------------------------------------------------------------'
     done
 }
 
 function jobqueue_install {
-    docker exec slurmctld conda run -n dask-jobqueue /bin/bash -c "cd /enjoy-slurm; pip install -e ."
+    for c in slurmctld c1 c2; do
+        docker exec $c conda run -n enjoy-slurm /bin/bash -c "cd /enjoy-slurm; pip install -e ."
+    done
 }
 
 function jobqueue_script {
-    docker exec slurmctld conda run -n dask-jobqueue /bin/bash -c "cd; pytest /enjoy-slurm/tests/test_slurm.py --verbose -E slurm -s"
+    docker exec slurmctld conda run -n enjoy-slurm /bin/bash -c "cd; pytest /enjoy-slurm/tests/test_slurm.py --verbose -E slurm -s"
 }
 
 function jobqueue_after_script {
