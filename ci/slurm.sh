@@ -29,12 +29,12 @@ function show_network_interfaces {
 
 function jobqueue_install {
     for c in slurmctld c1 c2; do
-        docker exec $c conda run -n enjoy-slurm /bin/bash -c "cd /enjoy-slurm; pip install -e ."
+        docker exec $c conda run -n dask-jobqueue /bin/bash -c "cd /enjoy-slurm; pip install -e ."
     done
 }
 
 function jobqueue_script {
-    docker exec slurmctld conda run -n enjoy-slurm /bin/bash -c "cd; pytest /enjoy-slurm/tests/test_slurm.py --verbose -E slurm -s"
+    docker exec slurmctld conda run -n dask-jobqueue /bin/bash -c "cd; pytest /enjoy-slurm/tests/test_slurm.py --verbose -E slurm -s"
 }
 
 function jobqueue_after_script {
