@@ -16,6 +16,8 @@ def test_parse_dependency():
     assert _parse_dependency((None, [1, 2, 3])) == "afterok:1:2:3"
     assert _parse_dependency(("afterany", [1, 2, 3])) == "afterany:1:2:3"
     assert _parse_dependency("afterany:1:2:3") == "afterany:1:2:3"
+    assert _parse_dependency([1, 2, 3], "afterok") == "afterok:1:2:3"
+    assert _parse_dependency([1, 2, 3], "afterany") == "afterany:1:2:3"
 
 
 def test_kwargs_to_list():
@@ -66,6 +68,20 @@ def test_kwargs_to_slurm():
     kwargs = {
         "partition": "test",
         "dependency": ("afterany", [1, 2, 3]),
+        "kill_on_invalid_dep": True,
+        "hold": True,
+    }
+    expect = {
+        "--partition": "test",
+        "--dependency": "afterany:1:2:3",
+        "--kill-on-invalid-dep": "yes",
+        "--hold": "",
+    }
+    assert kwargs_to_slurm(kwargs) == expect
+    kwargs = {
+        "partition": "test",
+        "dependency": [1, 2, 3],
+        "dependency_type": "afterany",
         "kill_on_invalid_dep": True,
         "hold": True,
     }

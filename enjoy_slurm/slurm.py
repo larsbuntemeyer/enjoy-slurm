@@ -4,7 +4,6 @@ from pathlib import Path
 from warnings import warn
 
 from .parser import (
-    args_to_list,
     handle_sacct_format,
     kwargs_to_list,
     parse_header,
@@ -21,9 +20,10 @@ from .utils import (  # create_scontrol_func,
 def sbatch(
     jobscript=None,
     dependency=None,
+    dependency_type=None,
     kill_on_invalid_dep=None,
     verbose=False,
-    *args,
+    # *args,
     **kwargs,
 ):
     """
@@ -41,13 +41,16 @@ def sbatch(
         Path to jobscript file. If no jobscript is provided, you can use the
         ``wrap`` keyword to directly pass shell commands.
     depdendency : str, tuple or list
-        A list of jobids this job depends on. This can also an original slurm command
+        A list of jobids this job depends on. This can also be an original slurm command
         as a string, e.g., ``"afterok:1:2:3"``. The default dependency type will be ``afterok``
         which means that this job will only start if all depedending jobs have exit code 0.
-        If depdendency is a tuple, the first entry defines the dependency type and the second will be the
-        list of jobids, e.g., ``("afterany", [1, 2, 3])``. See also the sbatch manpage for more details.
+        To set the dependency type, use the ``dependency_type`` keyword. See also the sbatch
+        manpage for more details.
+    depdendency_type: str
+        The type of the dependency. This can be ``afterok``, ``afternotok``, ``afterany``,
+        ``after`` or ``singleton``. The default is ``afterok``. Only applies if ``dependency`` is a list.
     kill_on_invalid_dep : bool or str
-        If a job has an invalid dependency and it can never run this parameter tells Slurm to terminate
+        If a job has an invalid dependency and it can never run, this parameter tells Slurm to terminate
         it or not. A terminated job state will be ``JOB_CANCELLED``. If this option is not specified,
         the system wide behavior applies. By default the job stays pending with reason ``DependencyNeverSatisfied``
         or if the kill_invalid_depend is specified in slurm.conf the job is terminated.
@@ -71,12 +74,16 @@ def sbatch(
         jobscript = [jobscript]
 
     kwargs.update(
-        {"dependency": dependency, "kill_on_invalid_dep": kill_on_invalid_dep}
+        {
+            "dependency": dependency,
+            "kill_on_invalid_dep": kill_on_invalid_dep,
+            "dependency_type": dependency_type,
+        }
     )
 
     command = (
         ["sbatch", "--parsable"]
-        + args_to_list(args)
+        # + args_to_list(args)
         + kwargs_to_list(kwargs)
         + jobscript
     )
@@ -97,8 +104,8 @@ def sacct(jobid=None, format=None, steps=None, verbose=False, **kwargs):
     format : list
         List of columns that should be shown.
     steps : str
-        Jobsteps that should be shown. If ``None``, all jobsteps are returned.
-        Use ``mininmal`` to return only the main inclusive step.
+        Jobsteps that should be shown. If ``all``, all jobsteps are returned.
+        Use ``mininmal`` to return only the main inclusive step. Default us ``minimal``.
     verbose : bool
         Print sacct command.
 
@@ -108,6 +115,8 @@ def sacct(jobid=None, format=None, steps=None, verbose=False, **kwargs):
         Slurm accounting data.
 
     """
+    if steps is None:
+        steps = "minimal"
     # return handle_sacct_format(format, kwargs)
     command = (
         ["sacct", "--parsable2"]
@@ -123,7 +132,7 @@ def sacct(jobid=None, format=None, steps=None, verbose=False, **kwargs):
     return parse_sacct(output, steps)
 
 
-def jobinfo(jobid=None, format=None, steps="minimal", **kwargs):
+def jobinfo(jobid=None, format=None, steps=None, **kwargs):
     """
     Accounting data for all jobs and job steps.
 
@@ -134,8 +143,8 @@ def jobinfo(jobid=None, format=None, steps="minimal", **kwargs):
     format : list
         List of columns that should be shown.
     steps : str
-        Jobsteps that should be shown. If ``None``, all jobsteps are returned.
-        Use ``mininmal`` to return only the main inclusive step.
+        Jobsteps that should be shown. If ``all``, all jobsteps are returned.
+        Use ``mininmal`` to return only the main inclusive step. Default is ``minimal``.
 
     Returns
     -------

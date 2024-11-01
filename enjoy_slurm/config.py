@@ -1,6 +1,8 @@
 delimiter = "|"
 
-skip_args = []
+skip_args = [
+    "dependency_type",
+]
 
 default_sacct_format = [
     "jobid",
