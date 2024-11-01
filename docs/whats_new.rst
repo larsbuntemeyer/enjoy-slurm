@@ -11,7 +11,7 @@ What's New
 v0.1.4 (Unreleased)
 -------------------
 
-Bugfixes
+Internal
 ~~~~~~~~
 
 - Update dependencies API (:pr:`63`).
