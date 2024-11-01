@@ -8,9 +8,9 @@ import pandas as pd
 from .config import default_sacct_format, delimiter, skip_args
 
 
-def _parse_dependency(ids):
+def _parse_dependency(ids, dependency_type=None):
     """parse dependency arguments to sbatch command line"""
-    how = None
+    how = dependency_type
     if isinstance(ids, str):
         return ids
     if isinstance(ids, tuple):
@@ -55,17 +55,6 @@ def args_to_list(args):
         else:
             args_list.append(a)
     return args_list
-
-
-def kwargs_to_list(d):
-    """parse arguments to command line arguments for sbatch"""
-    kwargs = kwargs_to_slurm(d)
-    r = []
-    for k, v in kwargs.items():
-        r.append(k),
-        if v:
-            r.append(v)
-    return r
 
 
 def _maybe_eval_types(d, only_values=False):
@@ -122,7 +111,7 @@ def _parse_header_line(line):
     return {k.strip(): v.strip()}
 
 
-def kwargs_to_slurm(d):
+def kwargs_to_slurm(kwargs):
     """Parse arguments to command line arguments for sbatch
 
     Parses a dictionary with keyword arguments from
@@ -136,14 +125,14 @@ def kwargs_to_slurm(d):
     """
     r = {}
     list_concat = ","
-    for k, v in d.items():
+    for k, v in kwargs.items():
         # ignore own kwargs
         if k in skip_args:
             continue
         flag = "--" + k.replace("_", "-")
         # special handling of dependencies
         if k == "dependency" and v:
-            r[flag] = _parse_dependency(v)
+            r[flag] = _parse_dependency(v, kwargs.get("dependency_type", None))
             continue
         if k == "kill_on_invalid_dep" and not isinstance(v, str):
             if v is not None:
@@ -216,6 +205,17 @@ def split_script(script, strip=True):
         header += "" if not line.strip() and strip else line
 
     return header, "".join(lines[i:]), shebang
+
+
+def kwargs_to_list(d):
+    """parse arguments to command line arguments for sbatch"""
+    kwargs = kwargs_to_slurm(d)
+    r = []
+    for k, v in kwargs.items():
+        r.append(k),
+        if v:
+            r.append(v)
+    return r
 
 
 def create_header(d):
