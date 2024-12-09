@@ -20,7 +20,7 @@ jobs:
         with:
             access_token: ${{ github.token }}
       - name: Checkout source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Empty Conda Environment with Mamba
         if: matrix.jobqueue == 'none'
