@@ -9,6 +9,6 @@ services:
     tty: true
     working_dir: /enjoy-slurm
     environment:
-      PYTHON: "3.11"
+      PYTHON: "3.12"
     volumes:
       - ${RUNNER_WORKSPACE}/enjoy-slurm:/enjoy-slurm
