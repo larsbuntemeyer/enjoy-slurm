@@ -2,13 +2,11 @@ name: test with slurm
 on: [push, pull_request]
 jobs:
   Build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version:
-          - "3.9"
-          - "3.10"
-          - "3.11"
+          - "3.12"
       fail-fast: false
     steps:
       - name: Checkout repository code
