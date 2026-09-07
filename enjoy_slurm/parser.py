@@ -102,8 +102,7 @@ def parse_scontrol_show(output):
 
 def _parse_header_line(line):
     """Parses a Slurm header line into a dict"""
-    if line.startswith("--"):
-        line = line[2:]
+    line = line.removeprefix("--")
     # split either by space or =
     k, v = re.split(r"\s|=", line, 1)
     # remove comments after SBATCH #
